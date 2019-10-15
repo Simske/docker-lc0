@@ -3,9 +3,9 @@
 FROM nvidia/cuda:10.1-cudnn7-devel as builder
 
 ## Install Prerequisites
-RUN apt-get update && apt-get install -y git ninja-build protobuf-compiler libprotobuf-dev python3 python3-pip
-# Meson with patch for expired HTTPS certificate
-RUN pip3 install git+https://github.com/Simske/meson.git && ln -s /usr/bin/python3 /usr/bin/python
+RUN apt-get update && apt-get install -y git ninja-build protobuf-compiler libprotobuf-dev python3 python3-pip && \
+    ln -s /usr/bin/python3 /usr/bin/python
+RUN pip3 install meson
 
 # download and compile lc0
 RUN     cd /root && \

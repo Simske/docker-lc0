@@ -1,9 +1,8 @@
 FROM vastai/tensorflow as BUILDER
 
 # install prerequisites
-RUN apt-get update && apt-get install -y clang-6.0 ninja-build libprotobuf10
-#RUN pip3 install meson
-RUN pip3 install git+https://github.com/Simske/meson.git
+RUN apt-get update && apt-get install -y clang-6.0 ninja-build libprotobuf9v5
+RUN pip3 install meson
 
 # download and compile lc0
 RUN     cd ~ && \
@@ -13,7 +12,7 @@ RUN     cd ~ && \
 
 FROM vastai/tensorflow
 
-RUN apt-get update && apt-get install -y libprotobuf10
+RUN apt-get update && apt-get install -y libprotobuf9v5
 
 WORKDIR /lc0
 COPY --from=0 /root/lc0/build/release/lc0 .
