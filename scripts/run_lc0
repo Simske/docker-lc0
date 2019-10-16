@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if ! [[ -z "$NETWORK_HASH" ]]
+then
+    LC0_FLAGS="${LC0_FLAGS} --weights=/lc0/weights/${NETWORK_HASH}"
+fi
+
+/lc0/lc0 $LC0_FLAGS

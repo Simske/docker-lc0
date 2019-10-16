@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -e
+
+/lc0/download_network
+/lc0/run_lc0

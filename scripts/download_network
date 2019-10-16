@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -e
+
+weights_path=/lc0/weights
+
+if [ $1 ]
+then
+    NETWORK_HASH=$1
+fi
+
+if [[ -z "$NETWORK_HASH" ]]
+then
+    echo "No network hash provided!"
+    echo "Set environment variable \$NETWORK_HASH or provide as script argument."
+    exit 1
+fi
+
+if ! [[ -f ${weights_path}/${NETWORK_HASH} ]]
+then
+    wget -O ${weights_path}/${NETWORK_HASH} https://lczero.org/get_network?sha=${NETWORK_HASH}
+fi
