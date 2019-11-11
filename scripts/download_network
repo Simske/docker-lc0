@@ -20,3 +20,5 @@ if ! [[ -f ${weights_path}/${NETWORK_HASH} ]]
 then
     wget -O ${weights_path}/${NETWORK_HASH} https://lczero.org/get_network?sha=${NETWORK_HASH}
 fi
+
+echo $NETWORK_HASH > /lc0/network_hash

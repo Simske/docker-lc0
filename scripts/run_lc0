@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [[ -z "$NETWORK_HASH" ]] && [[ -f /lc0/network_hash ]]
+then
+    export NETWORK_HASH=$(cat /lc0/network_hash)
+fi
+
 if ! [[ -z "$NETWORK_HASH" ]]
 then
     LC0_FLAGS="${LC0_FLAGS} --weights=/lc0/weights/${NETWORK_HASH}"
