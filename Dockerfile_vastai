@@ -18,8 +18,10 @@ WORKDIR /lc0
 COPY --from=0 /root/lc0/build/release/lc0 .
 ENV PATH /lc0:$PATH
 
-# download network
-#RUN     cd /lczero && \
-#        wget https://lczero.org/get_network?sha=03c8b3db4fded51bb92584a3e98a2cb4dc402ba037b9534ed1a8af99eb350f1a
-
-
+# Copy scripts for network download and lc0 startup
+WORKDIR /lc0
+COPY ./scripts/* /lc0/
+RUN chmod +x /lc0/* && \
+    mkdir /lc0/weights
+COPY --from=builder /root/lc0/build/release/lc0 .
+ENV PATH /lc0:$PATH
