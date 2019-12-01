@@ -9,7 +9,7 @@ RUN pip3 install meson
 
 # download and compile lc0
 RUN     cd /root && \
-        git clone --depth 1 -b release/0.22 --recurse-submodules https://github.com/LeelaChessZero/lc0.git lc0
+        git clone --depth 1 -b release/0.23 --recurse-submodules https://github.com/LeelaChessZero/lc0.git lc0
 RUN     /root/lc0/build.sh
 
 ## Runtime Stage ##
