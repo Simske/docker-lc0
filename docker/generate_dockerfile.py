@@ -8,51 +8,86 @@ class subprocess:
     def run(*args, **kwargs):
         print(args, kwargs)
 
-with open("config.yml") as f:
-    config = yaml.safe_load(f)
+class Config:
+    def __init__(self, filename):
+        with open(filename) as f:
+            self.config = yaml.safe_load(f)
+    
+    def get_profile(self, profilename):
+        if 'base' in self.config[profilename]:
+            conf = self.get_profile(self.config[profilename]['base']).copy()
+            conf.update(self.config[profilename])
+            return conf
+        else:
+            return self.config[profilename]
+    
+    def __iter__(self):
+        return iter(self.config)
 
-def get_profile(profilename):
-    if 'base' in config[profilename]:
-        conf = get_profile(config[profilename]['base']).copy()
-        conf.update(config[profilename])
-        return conf
-    else:
-        return config[profilename]
-
-def generate_dockerfiles():
-    with open("Dockerfile.template") as f:
-        dockerfile = Template(f.read(), trim_blocks=True)
-
-    for profilename in config:
-        conf = get_profile(profilename)
-
+class DockerfileGenerator:
+    def __init__(self, templatefile):
+        with open(templatefile) as f:
+            self.template = Template(f.read(), trim_blocks=True)
+    
+    def render(self, profilename, profile):
         with open(f"dockerfiles/Dockerfile.{profilename}", 'w') as f:
-            f.write(dockerfile.render(**conf))
+            f.write(self.template.render(**profile))
 
-def build_image(profilename):
-    profile = get_profile(profilename)
+
+def build_image(profilename, profile):
     imagename = profile['imagename']
     tag = f"{profile['lc0_version']}{profile['tag_suffix']}"
     subprocess.run(['docker', 'build', '-t', f"{imagename}:{tag}", '-f', f'dockerfiles/Dockerfile.{profilename}', '.'], check=True)
     return tag
 
-def tag_image(profilename, version_tag):
-    profile = get_profile(profilename)
+def tag_image(profilename, profile, version_tag):
     imagename = profile['imagename']
     default_tag = f"{profile['lc0_version']}{profile['tag_suffix']}"
     new_tag = f"{version_tag}{profile['tag_suffix']}"
     subprocess.run(['docker', 'tag', f"{imagename}:{default_tag}", f"{imagename}:{new_tag}"], check=True)
     return new_tag
 
-def push_image(profilename, version_tag):
-    profile = get_profile(profilename)
+def push_image(profile, version_tag=None):
     imagename = profile['imagename']
+    if version_tag is None:
+        version_tag = profile['lc0_version']
     tag = f"{version_tag}{profile['tag_suffix']}"
     subprocess.run(['docker', 'push', f"{imagename}:{tag}"])
 
+def make_profile(profilename, args):
+    profile = config.get_profile(profilename)
+
+    dockerfile.render(profilename, profile)
+
+    if args.build:
+        build_image(profilename, profile)
+    if args.tag_latest:
+        tag_image(profilename, profile, "latest")
+    if args.tag:
+        tag_image(profilename, profile, args.tag)
+
+    if args.push:
+        push_image(profile)
+        if args.tag_latest:
+            push_image(profile, 'latest')
+        if args.tag:
+            push_image(profile, args.tag)
+
+
 if __name__ == "__main__":
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("-v", "--version", type=str, help="lc0 version")
-    # args = parser.parse_args()
-    build_image('default_stockfish')
-    tag_image('default', 'latest')
+    parser = argparse.ArgumentParser()
+    parser.add_argument("profile", default="", nargs="?")
+    parser.add_argument("--build", action="store_true", help="Build docker images")
+    parser.add_argument("--tag-latest", action="store_true", help="Tag build images with 'latest'")
+    parser.add_argument("--push", action="store_true", help="Push images to Dockerhub")
+    parser.add_argument("--tag", default="", help="use additional custom version tag")
+    args = parser.parse_args()
+    dockerfile = DockerfileGenerator('Dockerfile.template')
+    config = Config("config.yml")
+
+    if args.profile:
+        make_profile(args.profile, args)
+    else:
+        for profilename in config:
+            make_profile(profilename, args)
+        
