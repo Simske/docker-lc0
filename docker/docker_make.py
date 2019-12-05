@@ -1,18 +1,22 @@
 #!/usr/bin/env python3
 
 import argparse
-# import subprocess
+import subprocess
+
 import yaml
 from jinja2 import Template
+
+
 class subprocess:
     def run(*args, **kwargs):
         print(args, kwargs)
+
 
 class Config:
     def __init__(self, filename):
         with open(filename) as f:
             self.config = yaml.safe_load(f)
-    
+
     def get_profile(self, profilename):
         if 'base' in self.config[profilename]:
             conf = self.get_profile(self.config[profilename]['base']).copy()
@@ -20,15 +24,16 @@ class Config:
             return conf
         else:
             return self.config[profilename]
-    
+
     def __iter__(self):
         return iter(self.config)
+
 
 class DockerfileGenerator:
     def __init__(self, templatefile):
         with open(templatefile) as f:
             self.template = Template(f.read(), trim_blocks=True)
-    
+
     def render(self, profilename, profile):
         with open(f"dockerfiles/Dockerfile.{profilename}", 'w') as f:
             f.write(self.template.render(**profile))
@@ -37,15 +42,19 @@ class DockerfileGenerator:
 def build_image(profilename, profile):
     imagename = profile['imagename']
     tag = f"{profile['lc0_version']}{profile['tag_suffix']}"
-    subprocess.run(['docker', 'build', '-t', f"{imagename}:{tag}", '-f', f'dockerfiles/Dockerfile.{profilename}', '.'], check=True)
+    subprocess.run(['docker', 'build', '-t', f"{imagename}:{tag}",
+                    '-f', f'dockerfiles/Dockerfile.{profilename}', '.'], check=True)
     return tag
+
 
 def tag_image(profilename, profile, version_tag):
     imagename = profile['imagename']
     default_tag = f"{profile['lc0_version']}{profile['tag_suffix']}"
     new_tag = f"{version_tag}{profile['tag_suffix']}"
-    subprocess.run(['docker', 'tag', f"{imagename}:{default_tag}", f"{imagename}:{new_tag}"], check=True)
+    subprocess.run(
+        ['docker', 'tag', f"{imagename}:{default_tag}", f"{imagename}:{new_tag}"], check=True)
     return new_tag
+
 
 def push_image(profile, version_tag=None):
     imagename = profile['imagename']
@@ -53,6 +62,7 @@ def push_image(profile, version_tag=None):
         version_tag = profile['lc0_version']
     tag = f"{version_tag}{profile['tag_suffix']}"
     subprocess.run(['docker', 'push', f"{imagename}:{tag}"])
+
 
 def make_profile(profilename, args):
     profile = config.get_profile(profilename)
@@ -78,7 +88,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("profile", default="", nargs="?")
     parser.add_argument("--build", action="store_true", help="Build docker images")
-    parser.add_argument("--tag-latest", action="store_true", help="Tag build images with 'latest'")
+    parser.add_argument("--tag-latest", action="store_true",
+                        help="Tag build images with 'latest'")
     parser.add_argument("--push", action="store_true", help="Push images to Dockerhub")
     parser.add_argument("--tag", default="", help="use additional custom version tag")
     args = parser.parse_args()
@@ -90,4 +101,3 @@ if __name__ == "__main__":
     else:
         for profilename in config:
             make_profile(profilename, args)
-        
