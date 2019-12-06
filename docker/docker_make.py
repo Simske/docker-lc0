@@ -2,14 +2,18 @@
 
 import argparse
 import subprocess
+import os
 
 import yaml
 from jinja2 import Template
 
-
-class subprocess:
-    def run(*args, **kwargs):
-        print(args, kwargs)
+try:
+    os.environ['DEBUG']
+    class subprocess:
+        def run(*args, **kwargs):
+            print(args, kwargs)
+except KeyError:
+    pass
 
 
 class Config:
