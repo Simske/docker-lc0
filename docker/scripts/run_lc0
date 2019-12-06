@@ -6,11 +6,13 @@ base_weight_url="https://lczero.org/get_network?sha="
 if [[ -f /lc0/network_hash ]]
 then
     NETWORK=$(cat /lc0/network_hash)
+    echo "Using network $NETWORK from '/lc0/network_hash'"
 fi
 
 if ! [[ -z "$NETWORK_HASH" ]]
 then
     NETWORK=$NETWORK_HASH
+    echo "Using network $NETWORK from \$NETWORK_HASH"
 fi
 
 
@@ -23,7 +25,7 @@ fi
 
 if ! [[ -f $weights_path/$NETWORK ]]
 then
-    wget -O $weights_path/$NETWORK ${base_weight_url}$NETWORK
+    wget -nv --show-progress -O $weights_path/$NETWORK ${base_weight_url}$NETWORK
 fi
 
 /lc0/lc0 $LC0_FLAGS --weights=${weights_path}/${NETWORK}
