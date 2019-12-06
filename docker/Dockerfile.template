@@ -12,7 +12,7 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 
 # download and compile lc0
 RUN     cd /root && \
-        git clone --depth 1 -b release/{{ lc_version }} --recurse-submodules https://github.com/LeelaChessZero/lc0.git lc0
+        git clone --depth 1 -b release/{{ lc0_version }} --recurse-submodules https://github.com/LeelaChessZero/lc0.git lc0
 RUN     /root/lc0/build.sh
 
 {% if stockfish %}
