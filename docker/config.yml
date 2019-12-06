@@ -19,11 +19,11 @@ default:
 default_stockfish:
   base: default
   stockfish: True
-  tag_suffix: _stockfish
+  tag_suffix: -stockfish
 
 vastai:
   base: default
-  tag_suffix: _vastai
+  tag_suffix: -vastai
   build:
     image: vastai/tensorflow
     apt_prerequisites: git ninja-build protobuf-compiler libprotobuf9v5 libprotobuf-dev
@@ -37,5 +37,5 @@ vastai:
 
 vastai_stockfish:
   base: vastai
-  tag_suffix: _stockfish_vastai
+  tag_suffix: -stockfish-vastai
   stockfish: True
