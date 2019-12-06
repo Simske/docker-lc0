@@ -4,15 +4,16 @@
 FROM {{ build['image'] }} as builder
 
 ## Install Prerequisites
-RUN apt-get update && apt-get install -y {{ build['apt_prerequisites'] }} && \
+RUN apt-get update && apt-get install -y git wget {{ build['apt_prerequisites'] }} && \
     pip3 install meson
 {% if build['python3_link'] %}
 RUN ln -s /usr/bin/python3 /usr/bin/python
 {% endif %}
 
 # download and compile lc0
-RUN     cd /root && \
-        git clone --depth 1 -b release/{{ lc0_version }} --recurse-submodules https://github.com/LeelaChessZero/lc0.git lc0
+RUN     mkdir -p /root/lc0 && \
+        wget -qO - https://github.com/LeelaChessZero/lc0/archive/v{{ lc0_version }}.tar.gz | \
+            tar xzf - -C /root/lc0 --strip-components 1
 RUN     /root/lc0/build.sh
 
 {% if stockfish %}
