@@ -25,7 +25,7 @@ fi
 
 if ! [[ -f $weights_path/$NETWORK ]]
 then
-    wget -nv --show-progress -O $weights_path/$NETWORK ${base_weight_url}$NETWORK
+    /lc0/download_network $NETWORK
 fi
 
 /lc0/lc0 $LC0_FLAGS --weights=${weights_path}/${NETWORK}

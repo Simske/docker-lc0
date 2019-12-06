@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+## Script for setting and downloading network, mainly meant for vast.ai
+## where environment variables cannot be set as easily
+
+network=$1
+
+if [[ -z "$NETWORK" ]]
+then
+    echo "No network hash provided as argument"
+    exit 1
+else
+    echo $NETWORK > /lc0/network_hash
+    /lc0/download_network $NETWORK
+fi
