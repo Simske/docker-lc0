@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
 
 import argparse
-import subprocess
+import logging
 import os
+import subprocess
 
 import yaml
 from jinja2 import Template
 
 try:
     os.environ['DEBUG']
+
+    logging.basicConfig(level=logging.DEBUG)
     class subprocess:
         def run(*args, **kwargs):
             print(args, kwargs)
 except KeyError:
-    pass
+    logging.basicConfig(level=logging.INFO, format='%(message)s')
 
 
 class Config:
@@ -39,8 +42,10 @@ class DockerfileGenerator:
             self.template = Template(f.read(), trim_blocks=True)
 
     def render(self, profilename, profile):
-        with open(f"dockerfiles/Dockerfile.{profilename}", 'w') as f:
+        filename = f"dockerfiles/Dockerfile.{profilename}"
+        with open(filename, 'w') as f:
             f.write(self.template.render(**profile))
+        logging.info(f"Created '{filename}'")
 
 
 def build_image(profilename, profile):
@@ -48,6 +53,7 @@ def build_image(profilename, profile):
     tag = f"{profile['lc0_version']}{profile['tag_suffix']}"
     subprocess.run(['docker', 'build', '-t', f"{imagename}:{tag}",
                     '-f', f'dockerfiles/Dockerfile.{profilename}', '.'], check=True)
+    logging.info(f"Build docker image '{imagename}:{tag}'")
     return tag
 
 
@@ -57,6 +63,7 @@ def tag_image(profilename, profile, version_tag):
     new_tag = f"{version_tag}{profile['tag_suffix']}"
     subprocess.run(
         ['docker', 'tag', f"{imagename}:{default_tag}", f"{imagename}:{new_tag}"], check=True)
+    logging.info("Added tag '{new_tag}' to image with tag '{default_tag}'")
     return new_tag
 
 
@@ -66,6 +73,7 @@ def push_image(profile, version_tag=None):
         version_tag = profile['lc0_version']
     tag = f"{version_tag}{profile['tag_suffix']}"
     subprocess.run(['docker', 'push', f"{imagename}:{tag}"])
+    logging.info(f"Pushed image '{imagename}:{tag}' to DockerHub")
 
 
 def make_profile(profilename, args):
