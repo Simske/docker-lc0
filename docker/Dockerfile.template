@@ -54,6 +54,8 @@ COPY --from=builder /root/stockfish-10-linux/Linux/* /stockfish/
 ENV PATH /stockfish:$PATH
 {% endif %}
 
-{% if cmd %}
+{% if runtime['cmd'] %}
 ENTRYPOINT ["/lc0/download_run_lc0"]
 {% endif %}
+
+

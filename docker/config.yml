@@ -2,7 +2,7 @@
 default:
   lc0_version: "0.22"
   tag_suffix: ""
-  imagename: simske/lczero
+  imagename: simske/lc0
   stockfish: False
   build:
     image: nvidia/cuda:10.1-cudnn7-devel
