@@ -40,6 +40,7 @@ class DockerfileGenerator:
     def __init__(self, templatefile):
         with open(templatefile) as f:
             self.template = Template(f.read(), trim_blocks=True)
+        os.makedirs('dockerfiles', exist_ok=True)
 
     def render(self, profilename, profile):
         filename = f"dockerfiles/Dockerfile.{profilename}"
