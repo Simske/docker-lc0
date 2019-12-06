@@ -55,7 +55,7 @@ ENV PATH /stockfish:$PATH
 {% endif %}
 
 {% if runtime['cmd'] %}
-ENTRYPOINT ["/lc0/run_lc0"]
+CMD ["/lc0/run_lc0"]
 {% endif %}
 
 
