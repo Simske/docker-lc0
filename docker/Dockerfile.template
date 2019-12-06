@@ -48,9 +48,9 @@ COPY --from=builder /root/lc0/build/release/lc0 .
 ENV PATH /lc0:$PATH
 
 {% if stockfish %}
-# Copy stockfish executables
+# Copy stockfish executable
 RUN mkdir /stockfish
-COPY --from=builder /root/stockfish-10-linux/Linux/* /stockfish/
+COPY --from=builder /root/stockfish-10-linux/Linux/stockfish_10_x64_modern /stockfish/stockfish
 ENV PATH /stockfish:$PATH
 {% endif %}
 
