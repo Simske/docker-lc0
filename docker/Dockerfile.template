@@ -41,7 +41,7 @@ ENV LD_LIBRARY_PATH /lib64
 
 # Copy scripts for network download and lc0 startup
 WORKDIR /lc0
-COPY ./scripts/* /lc0/
+COPY ./scripts/run_lc0 /lc0/
 RUN chmod +x /lc0/* && \
     mkdir /lc0/weights
 COPY --from=builder /root/lc0/build/release/lc0 .
@@ -55,7 +55,7 @@ ENV PATH /stockfish:$PATH
 {% endif %}
 
 {% if runtime['cmd'] %}
-ENTRYPOINT ["/lc0/download_run_lc0"]
+ENTRYPOINT ["/lc0/run_lc0"]
 {% endif %}
 
 
