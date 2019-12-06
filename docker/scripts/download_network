@@ -4,7 +4,7 @@
 base_weight_url="https://lczero.org/get_network?sha="
 weights_path=/lc0/weights
 
-network=$1
+NETWORK=$1
 
 if [[ -z "$NETWORK" ]]
 then
