@@ -64,7 +64,7 @@ def tag_image(profilename, profile, version_tag):
     new_tag = f"{version_tag}{profile['tag_suffix']}"
     subprocess.run(
         ['docker', 'tag', f"{imagename}:{default_tag}", f"{imagename}:{new_tag}"], check=True)
-    logging.info("Added tag '{new_tag}' to image with tag '{default_tag}'")
+    logging.info(f"Added tag '{new_tag}' to image with tag '{default_tag}'")
     return new_tag
 
 
