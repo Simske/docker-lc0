@@ -1,0 +1,39 @@
+###################
+## Compile Stage ##
+###################
+FROM nvidia/cuda:10.2-cudnn7-devel as builder
+
+## Install Prerequisites
+RUN apt-get update && apt-get install -y git wget ninja-build protobuf-compiler libprotobuf-dev libprotobuf10 python3 python3-pip && \
+    pip3 install meson
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
+# download and compile lc0
+RUN     mkdir -p /root/lc0 && \
+        wget -qO - https://github.com/LeelaChessZero/lc0/archive/v0.23.1.tar.gz | \
+            tar xzf - -C /root/lc0 --strip-components 1
+RUN     /root/lc0/build.sh
+
+
+
+###################
+## Runtime Stage ##
+###################
+FROM nvidia/cuda:10.2-cudnn7-runtime
+
+# Dependencies
+RUN apt-get update && apt-get install -y libprotobuf10 wget && apt-get clean
+COPY --from=builder /root/lc0/build/release/./subprojects/zlib-1.2.11/libz.so /lib64/
+ENV LD_LIBRARY_PATH /lib64
+
+# Copy scripts for network download and lc0 startup
+WORKDIR /lc0
+COPY ./scripts/* /lc0/
+RUN chmod +x /lc0/* && \
+    mkdir /lc0/weights
+COPY --from=builder /root/lc0/build/release/lc0 .
+ENV PATH /lc0:$PATH
+
+
+CMD ["/lc0/run_lc0"]
+

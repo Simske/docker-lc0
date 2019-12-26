@@ -1,0 +1,46 @@
+###################
+## Compile Stage ##
+###################
+FROM vastai/tensorflow as builder
+
+## Install Prerequisites
+RUN apt-get update && apt-get install -y git wget git ninja-build protobuf-compiler libprotobuf9v5 libprotobuf-dev && \
+    pip3 install meson
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
+# download and compile lc0
+RUN     mkdir -p /root/lc0 && \
+        wget -qO - https://github.com/LeelaChessZero/lc0/archive/v0.23.1.tar.gz | \
+            tar xzf - -C /root/lc0 --strip-components 1
+RUN     /root/lc0/build.sh
+
+# download and unpack stockfish
+RUN apt-get install -y wget unzip && \
+    cd ~ && \
+    wget https://stockfishchess.org/files/stockfish-10-linux.zip && \
+    unzip stockfish-10-linux.zip && \
+    chmod +x /root/stockfish-10-linux/Linux/*
+
+
+###################
+## Runtime Stage ##
+###################
+FROM vastai/tensorflow
+
+# Dependencies
+RUN apt-get update && apt-get install -y libprotobuf9v5 && apt-get clean
+
+# Copy scripts for network download and lc0 startup
+WORKDIR /lc0
+COPY ./scripts/* /lc0/
+RUN chmod +x /lc0/* && \
+    mkdir /lc0/weights
+COPY --from=builder /root/lc0/build/release/lc0 .
+ENV PATH /lc0:$PATH
+
+# Copy stockfish executable
+RUN mkdir /stockfish
+COPY --from=builder /root/stockfish-10-linux/Linux/stockfish_10_x64_modern /stockfish/stockfish
+ENV PATH /stockfish:$PATH
+
+
