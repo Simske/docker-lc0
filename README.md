@@ -43,16 +43,16 @@ The LC0 wiki links to a [table of good networks](https://docs.google.com/spreads
 #### General
 To run the general cudnn version:
 ```
-docker run -it --gpus=all -e NETWORK_HASH=b2acc2e7c7eb483760208c75668d56d55add204461371e61bbacff7ada7c2993 simske/lc0:latest
+docker run -i --gpus=all -a STDIN -a STDOUT -e NETWORK_HASH=b2acc2e7c7eb483760208c75668d56d55add204461371e61bbacff7ada7c2993 simske/lc0:latest
 ```
 The networks are in the directory `/lc0/weights`, a docker volume can be mounted to this location to cache the downloaded networks.
 To use a volume mount:
 ```
-docker run -it --gpus=all -v /lc0/weights -e NETWORK_HASH= simske/lc0:latest
+docker run -i --gpus=all -a STDIN -a STDOUT -v /lc0/weights -e NETWORK_HASH= simske/lc0:latest
 ```
 Or for a directory mount (such that a weights directory is connected to a folder on the host machine):
 ```
-docker run --gpus=all -v /path/on/host:/lc0/weights -e NETWORK_HASH= simske/lc0:latest
+docker run -i --gpus=all -a STDIN -a STDOUT -v /path/on/host:/lc0/weights -e NETWORK_HASH= simske/lc0:latest
 ```
 
 
@@ -106,6 +106,3 @@ For Stockfish another Inbetween-file and UCI-Engine need to be created. With reg
 The whole process can be automated using a script.
 
 Don't forget to change the path to your private key as well as the base path variable and make sure to have Python installed in order to execute the script.
-
-
-
