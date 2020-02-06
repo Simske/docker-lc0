@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ## Download network with provided hash. Will overwrite existing files
 
-base_weight_url="https://lczero.org/get_network?sha="
+base_weight_url="https://training.lczero.org/get_network?sha="
 weights_path=/lc0/weights
 
 NETWORK=$1
