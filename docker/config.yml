@@ -5,13 +5,13 @@ default:
   imagename: simske/lc0
   stockfish: False
   build:
-    image: nvidia/cuda:10.2-cudnn7-devel
-    apt_prerequisites: ninja-build protobuf-compiler libprotobuf-dev libprotobuf10 python3 python3-pip
+    image: nvidia/cuda:10.0-cudnn7-devel
+    apt_prerequisites: wget ninja-build python3 python3-pip
     python3_link: True
 
   runtime:
-    image: nvidia/cuda:10.2-cudnn7-runtime
-    apt_prerequisites: libprotobuf10 wget
+    image: nvidia/cuda:10.0-cudnn7-runtime
+    apt_prerequisites: wget
     shared_libraries:
      - /root/lc0/build/release/./subprojects/zlib-1.2.11/libz.so
     cmd: True
