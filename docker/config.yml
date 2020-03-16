@@ -24,16 +24,6 @@ default_stockfish:
 vastai:
   base: default
   tag_suffix: -vastai
-  build:
-    image: vastai/tensorflow
-    apt_prerequisites: git ninja-build protobuf-compiler libprotobuf9v5 libprotobuf-dev
-    python3_link: True
-
-  runtime:
-    image: vastai/tensorflow
-    apt_prerequisites: libprotobuf9v5
-    shared_libraries: []
-    cmd: False
 
 vastai_stockfish:
   base: vastai
