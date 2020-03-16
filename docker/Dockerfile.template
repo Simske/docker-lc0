@@ -4,7 +4,7 @@
 FROM {{ build['image'] }} as builder
 
 ## Install Prerequisites
-RUN apt-get update && apt-get install -y git wget {{ build['apt_prerequisites'] }} && \
+RUN apt-get update && apt-get install -y {{ build['apt_prerequisites'] }} && \
     pip3 install meson
 {% if build['python3_link'] %}
 RUN ln -s /usr/bin/python3 /usr/bin/python
@@ -18,8 +18,7 @@ RUN     /root/lc0/build.sh
 
 {% if stockfish %}
 # download and unpack stockfish
-RUN apt-get install -y wget unzip && \
-    cd ~ && \
+RUN cd ~ && \
     wget https://stockfishchess.org/files/stockfish-10-linux.zip && \
     unzip stockfish-10-linux.zip && \
     chmod +x /root/stockfish-10-linux/Linux/*
@@ -35,9 +34,9 @@ FROM {{ runtime['image'] }}
 RUN apt-get update && apt-get install -y {{ runtime['apt_prerequisites'] }} && apt-get clean
 {% if runtime['shared_libraries'] %}
 {% for path in runtime['shared_libraries'] %}
-COPY --from=builder {{ path }} /lib64/
+COPY --from=builder {{ path }} /lib/
 {% endfor %}
-ENV LD_LIBRARY_PATH /lib64
+ENV LD_LIBRARY_PATH /lib
 {% endif %}
 
 # Copy scripts for network download and lc0 startup
@@ -47,6 +46,9 @@ RUN chmod +x /lc0/* && \
     mkdir /lc0/weights
 COPY --from=builder /root/lc0/build/release/lc0 .
 ENV PATH /lc0:$PATH
+
+# Download default network
+RUN wget -O /lc0/weights/591226.pb.gz "https://training.lczero.org/get_network?sha=47e3f899519dc1bc95496a457b77730fce7b0b89b6187af5c01ecbbd02e88398"
 
 {% if stockfish %}
 # Copy stockfish executable

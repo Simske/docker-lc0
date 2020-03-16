@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+base_weight_url="https://training.lczero.org/get_network?sha="
+url_regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
+
+echoerr() { echo "$@" 1>&2; }
+
+if [[ -f /lc0/network ]]
+then
+    NETWORK_NAME=$(cat /lc0/network)
+    echoerr "Using network $NETWORK from '/lc0/network'"
+fi
+
+if ! [[ -z "$NETWORK" ]]
+then
+    echoerr "Using network $NETWORK from \$NETWORK"
+    NETWORK_NAME=$NETWORK
+fi
+
+if [[ $NETWORK_NAME =~ $url_regex ]]
+then 
+    NETWORK_URL=$NETWORK_NAME
+    NETWORK_NAME=$(echo $NETWORK_NAME | sed -r 's/.*?\/([^\/]+)/\1/')
+else
+    NETWORK_URL=${base_weight_url}${NETWORK_NAME}
+fi
+
+if [[ -z "$NETWORK_NAME" ]]
+then
+    echoerr "No network provided. Set it as environment variable \$NETWORK or write it to file /lc0/network"
+    echoerr "Using default network 591226"
+    NETWORK_NAME="591226.pb.gz"
+    NETWORK_URL="${base_weight_url}47e3f899519dc1bc95496a457b77730fce7b0b89b6187af5c01ecbbd02e88398"
+fi
+
+echoerr $NETWORK_URL
+
+if ! [[ -f $weights_path/$NETWORK_NAME ]]
+then
+    /lc0/download_network $NETWORK_URL $NETWORK_NAME
+fi
+echo $NETWORK_NAME

@@ -1,17 +1,17 @@
 
 default:
-  lc0_version: "0.23.2"
+  lc0_version: "0.24.1"
   tag_suffix: ""
   imagename: simske/lc0
   stockfish: False
   build:
-    image: nvidia/cuda:10.2-cudnn7-devel
-    apt_prerequisites: ninja-build protobuf-compiler libprotobuf-dev libprotobuf10 python3 python3-pip
+    image: nvidia/cuda:10.0-cudnn7-devel
+    apt_prerequisites: git wget unzip ninja-build python3 python3-pip
     python3_link: True
 
   runtime:
-    image: nvidia/cuda:10.2-cudnn7-runtime
-    apt_prerequisites: libprotobuf10 wget
+    image: nvidia/cuda:10.0-cudnn7-runtime
+    apt_prerequisites: wget
     shared_libraries:
      - /root/lc0/build/release/./subprojects/zlib-1.2.11/libz.so
     cmd: True
@@ -24,16 +24,6 @@ default_stockfish:
 vastai:
   base: default
   tag_suffix: -vastai
-  build:
-    image: vastai/tensorflow
-    apt_prerequisites: git ninja-build protobuf-compiler libprotobuf9v5 libprotobuf-dev
-    python3_link: True
-
-  runtime:
-    image: vastai/tensorflow
-    apt_prerequisites: libprotobuf9v5
-    shared_libraries: []
-    cmd: False
 
 vastai_stockfish:
   base: vastai
