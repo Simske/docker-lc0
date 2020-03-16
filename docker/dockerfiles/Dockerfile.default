@@ -1,16 +1,16 @@
 ###################
 ## Compile Stage ##
 ###################
-FROM nvidia/cuda:10.2-cudnn7-devel as builder
+FROM nvidia/cuda:10.0-cudnn7-devel as builder
 
 ## Install Prerequisites
-RUN apt-get update && apt-get install -y git wget ninja-build protobuf-compiler libprotobuf-dev libprotobuf10 python3 python3-pip && \
+RUN apt-get update && apt-get install -y git wget unzip ninja-build python3 python3-pip && \
     pip3 install meson
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
 # download and compile lc0
 RUN     mkdir -p /root/lc0 && \
-        wget -qO - https://github.com/LeelaChessZero/lc0/archive/v0.24.0-rc1.tar.gz | \
+        wget -qO - https://github.com/LeelaChessZero/lc0/archive/v0.24.1.tar.gz | \
             tar xzf - -C /root/lc0 --strip-components 1
 RUN     /root/lc0/build.sh
 
@@ -19,12 +19,12 @@ RUN     /root/lc0/build.sh
 ###################
 ## Runtime Stage ##
 ###################
-FROM nvidia/cuda:10.2-cudnn7-runtime
+FROM nvidia/cuda:10.0-cudnn7-runtime
 
 # Dependencies
-RUN apt-get update && apt-get install -y libprotobuf10 wget && apt-get clean
-COPY --from=builder /root/lc0/build/release/./subprojects/zlib-1.2.11/libz.so /lib64/
-ENV LD_LIBRARY_PATH /lib64
+RUN apt-get update && apt-get install -y wget && apt-get clean
+COPY --from=builder /root/lc0/build/release/./subprojects/zlib-1.2.11/libz.so /lib/
+ENV LD_LIBRARY_PATH /lib
 
 # Copy scripts for network download and lc0 startup
 WORKDIR /lc0
@@ -33,6 +33,9 @@ RUN chmod +x /lc0/* && \
     mkdir /lc0/weights
 COPY --from=builder /root/lc0/build/release/lc0 .
 ENV PATH /lc0:$PATH
+
+# Download default network
+RUN wget -O /lc0/weights/591226.pb.gz "https://training.lczero.org/get_network?sha=47e3f899519dc1bc95496a457b77730fce7b0b89b6187af5c01ecbbd02e88398"
 
 
 CMD ["/lc0/run_lc0"]
