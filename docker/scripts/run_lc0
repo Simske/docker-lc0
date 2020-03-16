@@ -1,32 +1,6 @@
 #!/usr/bin/env bash
 
-weights_path=/lc0/weights
-base_weight_url="https://lczero.org/get_network?sha="
-
-if [[ -f /lc0/network_hash ]]
-then
-    NETWORK=$(cat /lc0/network_hash)
-    echo "Using network $NETWORK from '/lc0/network_hash'"
-fi
-
-if ! [[ -z "$NETWORK_HASH" ]]
-then
-    NETWORK=$NETWORK_HASH
-    echo "Using network $NETWORK from \$NETWORK_HASH"
-fi
-
-
-if [[ -z "$NETWORK" ]]
-then
-    echo "No network hash provided. Set it as environment variable \$NETWORK_HASH or write it to file /lc0/network_hash"
-    echo "Using default network 42700 - hash 03c8b3db4fded51bb92584a3e98a2cb4dc402ba037b9534ed1a8af99eb350f1a"
-    NETWORK=03c8b3db4fded51bb92584a3e98a2cb4dc402ba037b9534ed1a8af99eb350f1a
-fi
-
-if ! [[ -f $weights_path/$NETWORK ]]
-then
-    /lc0/download_network $NETWORK
-fi
+export weights_path=/lc0/weights
+NETWORK=$(/lc0/network_parse $NETWORK)
 
 /lc0/lc0 $LC0_FLAGS --weights=${weights_path}/${NETWORK}
-

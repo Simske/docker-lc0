@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 ## Download network with provided hash. Will overwrite existing files
 
-base_weight_url="https://training.lczero.org/get_network?sha="
 weights_path=/lc0/weights
 
-NETWORK=$1
+NETWORK_URL=$1
+NETWORK_NAME=$2
 
-if [[ -z "$NETWORK" ]]
+if [[ -z "$NETWORK_NAME" ]]
 then
     echo "No network hash provided as argument"
     exit 1
 else
-    wget -nv --show-progress -O $weights_path/$NETWORK ${base_weight_url}$NETWORK
+    wget -nv --show-progress -O $weights_path/$NETWORK_NAME "$NETWORK_URL"
 fi
