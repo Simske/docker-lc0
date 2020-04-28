@@ -10,7 +10,7 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 
 # download and compile lc0
 RUN     mkdir -p /root/lc0 && \
-        wget -qO - https://github.com/LeelaChessZero/lc0/archive/v0.24.1.tar.gz | \
+        wget -qO - https://github.com/LeelaChessZero/lc0/archive/v0.25.0.tar.gz | \
             tar xzf - -C /root/lc0 --strip-components 1
 RUN     /root/lc0/build.sh
 
