@@ -19,9 +19,9 @@ RUN     /root/lc0/build.sh
 {% if stockfish %}
 # download and unpack stockfish
 RUN cd ~ && \
-    wget https://stockfishchess.org/files/stockfish-10-linux.zip && \
-    unzip stockfish-10-linux.zip && \
-    chmod +x /root/stockfish-10-linux/Linux/*
+    wget https://stockfishchess.org/files/stockfish-11-linux.zip && \
+    unzip stockfish-11-linux.zip && \
+    chmod +x /root/stockfish-11-linux/Linux/*
 {% endif %}
 
 
@@ -53,7 +53,7 @@ RUN wget -O /lc0/weights/591226.pb.gz "https://training.lczero.org/get_network?s
 {% if stockfish %}
 # Copy stockfish executable
 RUN mkdir /stockfish
-COPY --from=builder /root/stockfish-10-linux/Linux/stockfish_10_x64_modern /stockfish/stockfish
+COPY --from=builder /root/stockfish-11-linux/Linux/stockfish_20011801_x64_modern /stockfish/stockfish
 ENV PATH /stockfish:$PATH
 {% endif %}
 
