@@ -1,5 +1,6 @@
 
 default:
+  version_tag: "0.25"
   lc0_version: "0.25.0"
   tag_suffix: ""
   imagename: simske/lc0

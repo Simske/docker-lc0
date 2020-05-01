@@ -84,6 +84,7 @@ def make_profile(profilename, args):
 
     if args.build:
         build_image(profilename, profile)
+        tag_image(profilename, profile, profile['version_tag'])
     if args.tag_latest:
         tag_image(profilename, profile, "latest")
     if args.tag:
