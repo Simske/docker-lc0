@@ -4,7 +4,8 @@
 FROM {{ build['image'] }} as builder
 
 ## Install Prerequisites
-RUN apt-get update && apt-get upgrade -y && apt-get install -y {{ build['apt_prerequisites'] }} && \
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get install -y {{ build['apt_prerequisites'] }} && \
     pip3 install meson
 
 # download and compile lc0

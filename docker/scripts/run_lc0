@@ -3,4 +3,4 @@
 export weights_path=/lc0/weights
 NETWORK=$(/lc0/network_parse $NETWORK)
 
-/lc0/lc0 $LC0_FLAGS --weights=${weights_path}/${NETWORK}
+/lc0/lc0 $LC0_FLAGS --weights=${weights_path}/${NETWORK} $@

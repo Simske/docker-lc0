@@ -7,12 +7,12 @@ default:
   stockfish: False
   build:
     image: nvidia/cuda:10.0-cudnn7-devel
-    apt_prerequisites: git wget unzip ninja-build python3 python3-pip gcc-8 g++-8 libeigen3-dev clang
+    apt_prerequisites: git wget unzip ninja-build python3 python3-pip gcc-8 g++-8 libeigen3-dev clang libopenblas-dev
     python3_link: True
 
   runtime:
     image: nvidia/cuda:10.0-cudnn7-runtime
-    apt_prerequisites: wget
+    apt_prerequisites: wget libopenblas-base
     shared_libraries:
      - /root/lc0/build/release/./subprojects/zlib-1.2.11/libz.so
     cmd: True
