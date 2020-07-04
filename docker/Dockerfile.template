@@ -16,7 +16,7 @@ RUN     CC=clang CXX=clang++ /root/lc0/build.sh
 {% if stockfish %}
 # download and unpack stockfish
 RUN cd ~ && \
-    wget https://stockfishchess.org/files/stockfish-11-linux.zip && \
+    wget -4 https://stockfishchess.org/files/stockfish-11-linux.zip && \
     unzip stockfish-11-linux.zip && \
     chmod +x /root/stockfish-11-linux/Linux/*
 {% endif %}
@@ -45,7 +45,7 @@ COPY --from=builder /root/lc0/build/release/lc0 .
 ENV PATH /lc0:$PATH
 
 # Download default network
-RUN wget -O /lc0/weights/591226.pb.gz "https://training.lczero.org/get_network?sha=47e3f899519dc1bc95496a457b77730fce7b0b89b6187af5c01ecbbd02e88398"
+RUN wget -4 -O /lc0/weights/591226.pb.gz "https://training.lczero.org/get_network?sha=47e3f899519dc1bc95496a457b77730fce7b0b89b6187af5c01ecbbd02e88398"
 
 {% if stockfish %}
 # Copy stockfish executable
