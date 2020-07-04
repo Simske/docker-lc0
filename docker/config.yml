@@ -1,13 +1,13 @@
 
 default:
-  version_tag: "0.25"
-  lc0_version: "0.25.1"
+  version_tag: "0.26"
+  lc0_version: "0.26.0"
   tag_suffix: ""
   imagename: simske/lc0
   stockfish: False
   build:
     image: nvidia/cuda:10.0-cudnn7-devel
-    apt_prerequisites: git wget unzip ninja-build python3 python3-pip
+    apt_prerequisites: git wget unzip ninja-build python3 python3-pip gcc-8 g++-8 libeigen3-dev clang
     python3_link: True
 
   runtime:
