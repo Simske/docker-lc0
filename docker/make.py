@@ -92,6 +92,7 @@ def make_profile(profilename, args):
 
     if args.push:
         push_image(profile)
+        push_image(profile, profile['version_tag'])
         if args.tag_latest:
             push_image(profile, 'latest')
         if args.tag:
