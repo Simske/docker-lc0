@@ -52,7 +52,7 @@ class DockerfileGenerator:
 def build_image(profilename, profile):
     imagename = profile['imagename']
     tag = f"{profile['lc0_version']}{profile['tag_suffix']}"
-    subprocess.run(['docker', 'build', '-t', f"{imagename}:{tag}",
+    subprocess.run(['docker', 'build', '--pull', '-t', f"{imagename}:{tag}",
                     '-f', f'dockerfiles/Dockerfile.{profilename}', '.'], check=True)
     logging.info(f"Build docker image '{imagename}:{tag}'")
     return tag
