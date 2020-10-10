@@ -1,7 +1,7 @@
 
 default:
-  version_tag: "0.26"
-  lc0_version: "0.26.2"
+  version_tag: "0.26.3"
+  lc0_version: "0.26.3"
   tag_suffix: ""
   imagename: simske/lc0
   stockfish: False
