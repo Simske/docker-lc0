@@ -21,12 +21,3 @@ default_stockfish:
   base: default
   stockfish: True
   tag_suffix: -stockfish
-
-vastai:
-  base: default
-  tag_suffix: -vastai
-
-vastai_stockfish:
-  base: vastai
-  tag_suffix: -stockfish-vastai
-  stockfish: True
