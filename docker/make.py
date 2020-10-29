@@ -78,6 +78,8 @@ def push_image(profile, version_tag=None):
 
 
 def make_profile(profilename, args):
+    dockerfile = DockerfileGenerator('Dockerfile.template')
+    config = Config("config.yml")
     profile = config.get_profile(profilename)
 
     dockerfile.render(profilename, profile)
@@ -104,12 +106,10 @@ if __name__ == "__main__":
     parser.add_argument("profile", default="", nargs="?")
     parser.add_argument("--build", action="store_true", help="Build docker images")
     parser.add_argument("--tag-latest", action="store_true",
-                        help="Tag build images with 'latest'")
+            help="Tag build images with 'latest'")
     parser.add_argument("--push", action="store_true", help="Push images to Dockerhub")
     parser.add_argument("--tag", default="", help="use additional custom version tag")
     args = parser.parse_args()
-    dockerfile = DockerfileGenerator('Dockerfile.template')
-    config = Config("config.yml")
 
     if args.profile:
         make_profile(args.profile, args)
