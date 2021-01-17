@@ -5,6 +5,7 @@ default:
   tag_suffix: ""
   imagename: simske/lc0
   stockfish: False
+  march: ivybridge
   build:
     image: nvidia/cuda:11.0.3-cudnn8-devel-ubuntu20.04
     apt_prerequisites: >-
@@ -28,7 +29,7 @@ default:
         libopenblas-base
     cmd: True
 
-default_stockfish:
+stockfish:
   base: default
   stockfish: True
   tag_suffix: -stockfish

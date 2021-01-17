@@ -10,6 +10,7 @@ RUN apt-get update && \
 
 # download and compile lc0
 RUN     git clone -b v{{ lc0_version }} --recurse-submodules https://github.com/LeelaChessZero/lc0.git /root/lc0
+RUN     sed -i "s/march=native/march={{ march }}/g" /root/lc0/meson.build
 RUN     CC=clang CXX=clang++ /root/lc0/build.sh
 
 {% if stockfish %}
