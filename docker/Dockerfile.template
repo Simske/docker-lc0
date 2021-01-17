@@ -4,14 +4,12 @@
 FROM {{ build['image'] }} as builder
 
 ## Install Prerequisites
-RUN apt-get update && apt-get upgrade -y
-RUN apt-get install -y {{ build['apt_prerequisites'] }} && \
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y {{ build['apt_prerequisites'] }} && \
     pip3 install meson
 
 # download and compile lc0
-RUN     mkdir -p /root/lc0 && \
-        wget -qO - https://github.com/LeelaChessZero/lc0/archive/v{{ lc0_version }}.tar.gz | \
-            tar xzf - -C /root/lc0 --strip-components 1
+RUN     git clone -b v{{ lc0_version }} --recurse-submodules https://github.com/LeelaChessZero/lc0.git /root/lc0
 RUN     CC=clang CXX=clang++ /root/lc0/build.sh
 
 {% if stockfish %}
@@ -22,7 +20,6 @@ RUN cd ~ && \
     mv stockfish_*_x64_avx2 stockfish
 {% endif %}
 
-
 ###################
 ## Runtime Stage ##
 ###################
@@ -30,12 +27,6 @@ FROM {{ runtime['image'] }}
 
 # Dependencies
 RUN apt-get update && apt-get install -y {{ runtime['apt_prerequisites'] }} && apt-get clean
-{% if runtime['shared_libraries'] %}
-{% for path in runtime['shared_libraries'] %}
-COPY --from=builder {{ path }} /lib/
-{% endfor %}
-ENV LD_LIBRARY_PATH /lib
-{% endif %}
 
 # Copy scripts for network download and lc0 startup
 WORKDIR /lc0
