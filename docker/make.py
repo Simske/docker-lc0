@@ -28,9 +28,10 @@ class Config:
         if 'base' in self.config[profilename]:
             conf = self.get_profile(self.config[profilename]['base']).copy()
             conf.update(self.config[profilename])
-            return conf
         else:
-            return self.config[profilename]
+            conf = self.config[profilename]
+        conf['name'] = profilename
+        return conf
 
     def __iter__(self):
         return iter(self.config)
@@ -42,23 +43,23 @@ class DockerfileGenerator:
             self.template = Template(f.read(), trim_blocks=True)
         os.makedirs('dockerfiles', exist_ok=True)
 
-    def render(self, profilename, profile):
-        filename = f"dockerfiles/Dockerfile.{profilename}"
+    def render(self, profile):
+        filename = f"dockerfiles/Dockerfile.{profile['name']}"
         with open(filename, 'w') as f:
             f.write(self.template.render(**profile))
         logging.info(f"Created '{filename}'")
 
 
-def build_image(profilename, profile):
+def build_image(profile):
     imagename = profile['imagename']
     tag = f"{profile['lc0_version']}{profile['tag_suffix']}"
     subprocess.run(['docker', 'build', '--pull', '-t', f"{imagename}:{tag}",
-                    '-f', f'dockerfiles/Dockerfile.{profilename}', '.'], check=True)
+                    '-f', f'dockerfiles/Dockerfile.{profile["name"]}', '.'], check=True)
     logging.info(f"Build docker image '{imagename}:{tag}'")
     return tag
 
 
-def tag_image(profilename, profile, version_tag):
+def tag_image(profile, version_tag):
     imagename = profile['imagename']
     default_tag = f"{profile['lc0_version']}{profile['tag_suffix']}"
     new_tag = f"{version_tag}{profile['tag_suffix']}"
@@ -77,20 +78,18 @@ def push_image(profile, version_tag=None):
     logging.info(f"Pushed image '{imagename}:{tag}' to DockerHub")
 
 
-def make_profile(profilename, args):
+def make_profile(profile, args):
     dockerfile = DockerfileGenerator('Dockerfile.template')
-    config = Config("config.yml")
-    profile = config.get_profile(profilename)
 
-    dockerfile.render(profilename, profile)
+    dockerfile.render(profile)
 
     if args.build:
-        build_image(profilename, profile)
-        tag_image(profilename, profile, profile['version_tag'])
+        build_image(profile)
+        tag_image(profile, profile['version_tag'])
     if args.tag_latest:
-        tag_image(profilename, profile, "latest")
+        tag_image(profile, "latest")
     if args.tag:
-        tag_image(profilename, profile, args.tag)
+        tag_image(profile, args.tag)
 
     if args.push:
         push_image(profile)
@@ -111,8 +110,10 @@ if __name__ == "__main__":
     parser.add_argument("--tag", default="", help="use additional custom version tag")
     args = parser.parse_args()
 
+    config = Config("config.yml")
+
     if args.profile:
-        make_profile(args.profile, args)
+        make_profile(config.get_profile(args.profile), args)
     else:
         for profilename in config:
-            make_profile(profilename, args)
+            make_profile(config.get_profile(profilename), args)
