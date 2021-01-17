@@ -4,11 +4,22 @@ neural net chess engine [LeelaZero](https://github.com/LeelaChessZero/lc0) and
 conventional chess engine [Stockfish](https://stockfishchess.org/) on Linux.
 
 Using the Docker containers makes installation and running the engines on cloud servers very easy.
-To run lc0 efficiently a GPU is needed, preferably with CUDA support, but a OpenCL backend is also available.
-The CPU backends `eigen` and `openblas` are also supported in this image.
+To run lc0 efficiently a GPU is needed, but the CPU backends `eigen` and `openblas` are also supported in this image.
 Stockfish is included to utilise the CPU as well.
+(All supported backends: `cudnn-auto`, `cudnn`, `cudnn-fp16`, `cuda-auto`, `cuda`, `cuda-fp16`, `blas`, `eigen`)
 
 The tutorial focuses on the Cloud machine provider [vast.ai](https://vast.ai/).
+
+## Requirements
+CPU with instruction set from Ivy Bridge or newer
+For CUDA backends:
+- Nvidia GPU with driver compatible with **CUDA 11.0** or higher
+- `nvidia-container-runtime`
+
+## Tags
+Current version tags (all tags on one line point to same image):
+- `latest`, `0.26`, `0.26.3`
+- `latest-stockfish`, `0.26-stockfish`, `0.26.3-stockfish`
 
 ## Variations
 The Docker images are based on the `nvidia/cuda` cudnn images, and two variations are provided:
