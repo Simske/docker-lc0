@@ -11,11 +11,11 @@ RUN apt-get update && \
 # download and compile lc0
 RUN     git clone -b v0.26.3 --recurse-submodules https://github.com/LeelaChessZero/lc0.git /root/lc0
 RUN     sed -i "s/march=native/march=ivybridge/g" /root/lc0/meson.build
-RUN     CC=clang CXX=clang++ /root/lc0/build.sh
+RUN     /root/lc0/build.sh
 
 # download and unpack stockfish
 RUN cd ~ && \
-    wget -4 https://stockfishchess.org/files/stockfish_12_linux_x64_avx2.zip -O stockfish.zip && \
+    wget -4 https://stockfishchess.org/files/stockfish_13_linux_x64_avx2.zip -O stockfish.zip && \
     unzip stockfish.zip && \
     mv stockfish_*_x64_avx2 stockfish
 
