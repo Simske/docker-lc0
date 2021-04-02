@@ -1,7 +1,45 @@
 #!/usr/bin/env bash
 
+FLAGS="$LC0_FLAGS $@"
+
 export weights_path=/lc0/weights
 NETWORK=$(/lc0/network_parse $NETWORK)
 
-/lc0/lc0 $@ $LC0_FLAGS --weights=${weights_path}/${NETWORK}
+# check if Nvidia GPU
+if nvidia-smi >/dev/null 2>&1; then
+    # count GPUs
+    gpu_count=$(nvidia-smi --query-gpu=name --format=csv,noheader | wc -l)
+    # don't apply this if: less than 2 GPUs or backend other
+    # than cuda-* or cudnn-* is set
+    # or any backend-opts are set
+    if [ $gpu_count -gt 1 ] && \
+       [[ ! "$FLAGS" =~ --backend-opts ]] && \
+       ( [[ "$FLAGS" =~ --backend=(cud|demux|multiplexing|roundrobin) ]] || \
+         [[ ! "$FLAGS" =~ --backend ]] )
+    then
+        # check for backend involving cuda -> will be used on all GPUs
+        if [[ "$FLAGS" =~ (.*)--backend=(cud[a-z0-9-]+)(.*) ]]; then
+            backend=${BASH_REMATCH[2]}
+            FLAGS=${BASH_REMATCH[1]}${BASH_REMATCH[3]}
+        else
+            backend="cudnn-auto"
+        fi
 
+        # check for multiplexing backend
+        if [[ "$FLAGS" =~ (.*)--backend=(demux|multiplexing|roundrobin)(.*) ]]; then
+            multi_gpu_backend=${BASH_REMATCH[2]}
+            FLAGS=${BASH_REMATCH[1]}${BASH_REMATCH[3]}
+        else
+            multi_gpu_backend="demux"
+        fi
+        echo "GPU count: $gpu_count"
+        MULTIGPU_FLAGS="--backend=${multi_gpu_backend} \
+            --backend-opts=backend=${backend},$(for i in $(seq 0 $(expr $gpu_count - 1)); \
+                                                do echo -n "(gpu=$i),"; done)"
+        MULTIGPU_FLAGS=$(echo -n $MULTIGPU_FLAGS | xargs)
+    fi
+fi
+
+FLAGS="$FLAGS --weights=${weights_path}/${NETWORK} $MULTIGPU_FLAGS"
+echo "Running lc0 with flags: $FLAGS"
+/lc0/lc0 $FLAGS
