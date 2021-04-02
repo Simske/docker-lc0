@@ -3,11 +3,11 @@ default:
   version_tag: "0.27"
   lc0_version: "0.27.0"
   tag_suffix: ""
-  imagename: simske/lc0
+  imagename: docker.io/simske/lc0
   stockfish: False
   march: ivybridge
   build:
-    image: nvidia/cuda:11.0.3-cudnn8-devel-ubuntu20.04
+    image: nvcr.io/nvidia/cuda:11.0.3-cudnn8-devel-ubuntu20.04
     apt_prerequisites: >-
         git
         wget
@@ -23,7 +23,7 @@ default:
         cmake
 
   runtime:
-    image: nvidia/cuda:11.0.3-cudnn8-runtime-ubuntu20.04
+    image: nvcr.io/nvidia/cuda:11.0.3-cudnn8-runtime-ubuntu20.04
     apt_prerequisites: >-
         wget
         libopenblas-base
