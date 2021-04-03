@@ -112,6 +112,19 @@ if __name__ == "__main__":
 
     config = Config("config.yml")
 
+    # Use git branch name as additional tag suffix (if not main)
+    try:
+        git_branch = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"],
+                                    capture_output=True).stdout.decode().strip()
+    except: # pretend it's main path if git is not available
+        git_branch = ""
+    if git_branch not in ("main", ""):
+        for profilename in config:
+            try:
+                config.config[profilename]["tag_suffix"] += f"-{git_branch}"
+            except KeyError:
+                continue
+
     if args.profile:
         make_profile(config.get_profile(args.profile), args)
     else:
