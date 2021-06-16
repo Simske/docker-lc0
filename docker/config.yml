@@ -6,6 +6,9 @@ default:
   imagename: docker.io/simske/lc0
   stockfish: False
   march: ivybridge
+  network:
+    name: 703810.pb.gz
+    url: https://training.lczero.org/get_network?sha=b30e742bcfd905815e0e7dbd4e1bafb41ade748f85d006b8e28758f1a3107ae3
   build:
     image: nvcr.io/nvidia/cuda:11.0.3-cudnn8-devel-ubuntu20.04
     apt_prerequisites: >-

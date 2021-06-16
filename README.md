@@ -55,11 +55,11 @@ docker run -i --gpus=all -a STDIN -a STDOUT simske/lc0:latest
 The networks are in the directory `/lc0/weights`, a docker volume can be mounted to this location to cache the downloaded networks.
 To use a volume mount:
 ```
-docker run -i --gpus=all -a STDIN -a STDOUT -v /lc0/weights -e NETWORK_HASH= simske/lc0:latest
+docker run -i --gpus=all -a STDIN -a STDOUT -v /lc0/weights -e NETWORK= simske/lc0:latest
 ```
 Or for a directory mount (such that a weights directory is connected to a folder on the host machine):
 ```
-docker run -i --gpus=all -a STDIN -a STDOUT -v /path/on/host:/lc0/weights -e NETWORK_HASH= simske/lc0:latest
+docker run -i --gpus=all -a STDIN -a STDOUT -v /path/on/host:/lc0/weights -e NETWORK= simske/lc0:latest
 ```
 
 
