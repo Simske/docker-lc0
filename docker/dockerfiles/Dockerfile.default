@@ -9,7 +9,7 @@ RUN apt-get update && \
     pip3 install meson
 
 # download and compile lc0
-RUN     git clone -b v0.27.0 --recurse-submodules https://github.com/LeelaChessZero/lc0.git /root/lc0
+RUN     git clone -b v0.28.0-rc1 --recurse-submodules https://github.com/LeelaChessZero/lc0.git /root/lc0
 RUN     sed -i "s/march=native/march=ivybridge/g" /root/lc0/meson.build
 RUN     /root/lc0/build.sh
 
@@ -31,8 +31,8 @@ COPY --from=builder /root/lc0/build/release/lc0 .
 ENV PATH /lc0:$PATH
 
 # Download default network
-RUN wget -4 -O /lc0/weights/591226.pb.gz "https://training.lczero.org/get_network?sha=47e3f899519dc1bc95496a457b77730fce7b0b89b6187af5c01ecbbd02e88398"
-
+RUN echo "NETWORK_NAME=703810.pb.gz\nNETWORK_URL=https://training.lczero.org/get_network?sha=b30e742bcfd905815e0e7dbd4e1bafb41ade748f85d006b8e28758f1a3107ae3" > /lc0/default_network.env && \
+    /lc0/download_network https://training.lczero.org/get_network?sha=b30e742bcfd905815e0e7dbd4e1bafb41ade748f85d006b8e28758f1a3107ae3 703810.pb.gz
 
 CMD ["/lc0/run_lc0"]
 
