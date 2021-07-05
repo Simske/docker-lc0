@@ -18,7 +18,7 @@ RUN     /root/lc0/build.sh
 RUN cd ~ && \
     wget -4 {{ stockfish_url }} -O stockfish.zip && \
     unzip stockfish.zip && \
-    mv stockfish_*_x64_avx2 stockfish
+    mv stockfish_*/stockfish_*_x64_avx2 stockfish
 {% endif %}
 
 ###################
