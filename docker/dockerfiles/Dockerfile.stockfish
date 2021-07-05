@@ -15,9 +15,9 @@ RUN     /root/lc0/build.sh
 
 # download and unpack stockfish
 RUN cd ~ && \
-    wget -4 https://stockfishchess.org/files/stockfish_13_linux_x64_avx2.zip -O stockfish.zip && \
+    wget -4 https://stockfishchess.org/files/stockfish_14_linux_x64_avx2.zip -O stockfish.zip && \
     unzip stockfish.zip && \
-    mv stockfish_*_x64_avx2 stockfish
+    mv stockfish_*/stockfish_*_x64_avx2 stockfish
 
 ###################
 ## Runtime Stage ##

@@ -32,5 +32,5 @@ default:
 stockfish:
   base: default
   stockfish: True
-  stockfish_url: https://stockfishchess.org/files/stockfish_13_linux_x64_avx2.zip
+  stockfish_url: https://stockfishchess.org/files/stockfish_14_linux_x64_avx2.zip
   tag_suffix: -stockfish
