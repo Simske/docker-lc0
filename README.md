@@ -18,8 +18,8 @@ For CUDA backends:
 
 ## Tags
 Current version tags (all tags on one line point to same image):
-- `latest`, `0.26`, `0.26.3`
-- `latest-stockfish`, `0.26-stockfish`, `0.26.3-stockfish`
+- `latest`, `0.28`, `0.28.0`
+- `latest-stockfish`, `0.27-stockfish`, `0.27.0-stockfish`
 
 ## Variations
 The Docker images are based on the `nvidia/cuda` cudnn images, and two variations are provided:
