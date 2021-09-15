@@ -108,6 +108,7 @@ if __name__ == "__main__":
             help="Tag build images with 'latest'")
     parser.add_argument("--push", action="store_true", help="Push images to Dockerhub")
     parser.add_argument("--tag", default="", help="use additional custom version tag")
+    parser.add_argument("--tag-branch", action="store_true", help="Tag images with git branch name")
     args = parser.parse_args()
 
     config = Config("config.yml")
@@ -118,7 +119,7 @@ if __name__ == "__main__":
                                     capture_output=True).stdout.decode().strip()
     except: # pretend it's main path if git is not available
         git_branch = ""
-    if git_branch not in ("main", ""):
+    if git_branch not in ("main", "") and args.tag_branch:
         for profilename in config:
             try:
                 config.config[profilename]["tag_suffix"] += f"-{git_branch}"
