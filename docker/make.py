@@ -50,11 +50,14 @@ class DockerfileGenerator:
         logging.info(f"Created '{filename}'")
 
 
-def build_image(profile):
+def build_image(profile, pull: bool=True):
     imagename = profile['imagename']
     tag = f"{profile['lc0_version']}{profile['tag_suffix']}"
-    subprocess.run(['docker', 'build', '--pull', '-t', f"{imagename}:{tag}",
-                    '-f', f'dockerfiles/Dockerfile.{profile["name"]}', '.'], check=True)
+    cmd = ['docker', 'build', "-t", f"{imagename}:{tag}",
+           '-f', f'dockerfiles/Dockerfile.{profile["name"]}', '.']
+    if pull:
+        cmd.insert(-1, "--pull")
+    subprocess.run(cmd, check=True)
     logging.info(f"Build docker image '{imagename}:{tag}'")
     return tag
 
@@ -78,13 +81,13 @@ def push_image(profile, version_tag=None):
     logging.info(f"Pushed image '{imagename}:{tag}' to DockerHub")
 
 
-def make_profile(profile, args):
+def make_profile(profile, args, pull: bool=True):
     dockerfile = DockerfileGenerator('Dockerfile.template')
 
     dockerfile.render(profile)
 
     if args.build:
-        build_image(profile)
+        build_image(profile, pull=pull)
         tag_image(profile, profile['version_tag'])
     if args.tag_latest:
         tag_image(profile, "latest")
@@ -109,6 +112,7 @@ if __name__ == "__main__":
     parser.add_argument("--push", action="store_true", help="Push images to Dockerhub")
     parser.add_argument("--tag", default="", help="use additional custom version tag")
     parser.add_argument("--tag-branch", action="store_true", help="Tag images with git branch name")
+    parser.add_argument("--no-pull", action="store_true", help="Don't pull base images during build")
     args = parser.parse_args()
 
     config = Config("config.yml")
@@ -127,7 +131,7 @@ if __name__ == "__main__":
                 continue
 
     if args.profile:
-        make_profile(config.get_profile(args.profile), args)
+        make_profile(config.get_profile(args.profile), args, pull=not args.no_pull)
     else:
         for profilename in config:
-            make_profile(config.get_profile(profilename), args)
+            make_profile(config.get_profile(profilename), args, pull=not args.no_pull)
