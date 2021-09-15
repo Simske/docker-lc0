@@ -38,8 +38,8 @@ COPY --from=builder /root/lc0/build/release/lc0 .
 ENV PATH /lc0:$PATH
 
 # Download default network
-RUN wget -4 -O /lc0/weights/591226.pb.gz "https://training.lczero.org/get_network?sha=47e3f899519dc1bc95496a457b77730fce7b0b89b6187af5c01ecbbd02e88398"
-
+RUN echo "NETWORK_NAME={{ network['name'] }}\nNETWORK_URL={{ network['url']}}" > /lc0/default_network.env && \
+    /lc0/download_network {{ network["url"] }} {{ network["name"] }}
 {% if stockfish %}
 # Copy stockfish executable
 RUN mkdir /stockfish
