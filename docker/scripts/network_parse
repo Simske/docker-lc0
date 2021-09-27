@@ -18,7 +18,7 @@ then
 fi
 
 if [[ $NETWORK_NAME =~ $url_regex ]]
-then 
+then
     NETWORK_URL=$NETWORK_NAME
     NETWORK_NAME=$(echo $NETWORK_NAME | sed -r 's/.*?\/([^\/]+)/\1/')
 else

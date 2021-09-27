@@ -35,4 +35,3 @@ RUN echo "NETWORK_NAME=752187.pb.gz\nNETWORK_URL=https://training.lczero.org/get
     /lc0/download_network https://training.lczero.org/get_network?sha=65d1d197e81e221552b0803dd3623c738887dcb132e084fbab20f93deb66a0c0 752187.pb.gz
 
 CMD ["/lc0/run_lc0"]
-

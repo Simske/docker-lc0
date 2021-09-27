@@ -50,5 +50,3 @@ ENV PATH /stockfish:$PATH
 {% if runtime['cmd'] %}
 CMD ["/lc0/run_lc0"]
 {% endif %}
-
-

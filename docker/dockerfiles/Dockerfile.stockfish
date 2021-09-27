@@ -44,4 +44,3 @@ COPY --from=builder /root/stockfish /stockfish/stockfish
 ENV PATH /stockfish:$PATH
 
 CMD ["/lc0/run_lc0"]
-
