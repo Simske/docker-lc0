@@ -42,4 +42,5 @@ fi
 
 FLAGS="$FLAGS --weights=${WEIGHTS_PATH}/${NETWORK} $MULTIGPU_FLAGS"
 echo "Running lc0 with flags: $FLAGS"
-/lc0/lc0 "$FLAGS"
+# shellcheck disable=SC2086
+/lc0/lc0 $FLAGS
