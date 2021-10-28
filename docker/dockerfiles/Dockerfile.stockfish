@@ -1,7 +1,7 @@
-###################
-## Compile Stage ##
-###################
-FROM docker.io/nvidia/cuda:11.2.0-cudnn8-devel-ubuntu20.04 as builder
+#################
+## Compile lc0 ##
+#################
+FROM docker.io/nvidia/cuda:11.2.0-cudnn8-devel-ubuntu20.04 as lc0_build
 
 ## Install Prerequisites
 RUN apt-get update && \
@@ -10,37 +10,50 @@ RUN apt-get update && \
 
 # download and compile lc0
 RUN     git clone -b v0.28.0 --recurse-submodules https://github.com/LeelaChessZero/lc0.git /root/lc0
-RUN     sed -i "s/march=native/march=ivybridge/g" /root/lc0/meson.build
-RUN     /root/lc0/build.sh
+RUN     sed -i "s/march=native/march=ivybridge/g" /root/lc0/meson.build && \
+        /root/lc0/build.sh
+
+# prepare directory structure for runtime
+COPY ./scripts/* /lc0/
+RUN cp /root/lc0/build/release/lc0 /lc0/lc0 && \
+    chmod +x /lc0/* && \
+    mkdir /lc0/weights
+
+########################
+## Download stockfish ##
+########################
+FROM alpine:3 as stockfish
+
+RUN apk add --no-cache wget unzip
 
 # download and unpack stockfish
-RUN cd ~ && \
-    wget -4 https://stockfishchess.org/files/stockfish_14_linux_x64_avx2.zip -O stockfish.zip && \
+RUN cd /root && \
+    wget -4 https://stockfishchess.org/files/stockfish_14.1_linux_x64_avx2.zip -O stockfish.zip && \
     unzip stockfish.zip && \
-    mv stockfish_*/stockfish_*_x64_avx2 stockfish
+    mkdir /stockfish && \
+    mv stockfish_*/stockfish_*_x64_avx2 /stockfish/stockfish && \
+    chmod +x /stockfish/stockfish
 
-###################
-## Runtime Stage ##
-###################
+
+#############
+## Runtime ##
+#############
 FROM docker.io/nvidia/cuda:11.2.0-cudnn8-runtime-ubuntu20.04
 
 # Dependencies
 RUN apt-get update && apt-get install -y wget libopenblas-base && apt-get clean
 
 # Copy scripts for network download and lc0 startup
+COPY --from=lc0_build /lc0 /lc0
 WORKDIR /lc0
-COPY ./scripts/* /lc0/
-RUN chmod +x /lc0/* && \
-    mkdir /lc0/weights
-COPY --from=builder /root/lc0/build/release/lc0 .
 ENV PATH /lc0:$PATH
 
 # Download default network
 RUN echo "NETWORK_NAME=752187.pb.gz\nNETWORK_URL=https://training.lczero.org/get_network?sha=65d1d197e81e221552b0803dd3623c738887dcb132e084fbab20f93deb66a0c0" > /lc0/default_network.env && \
     /lc0/download_network https://training.lczero.org/get_network?sha=65d1d197e81e221552b0803dd3623c738887dcb132e084fbab20f93deb66a0c0 752187.pb.gz
+
 # Copy stockfish executable
-RUN mkdir /stockfish
-COPY --from=builder /root/stockfish /stockfish/stockfish
+COPY --from=stockfish /stockfish/ /
 ENV PATH /stockfish:$PATH
 
 CMD ["/lc0/run_lc0"]

@@ -1,7 +1,7 @@
-###################
-## Compile Stage ##
-###################
-FROM docker.io/nvidia/cuda:11.2.0-cudnn8-devel-ubuntu20.04 as builder
+#################
+## Compile lc0 ##
+#################
+FROM docker.io/nvidia/cuda:11.2.0-cudnn8-devel-ubuntu20.04 as lc0_build
 
 ## Install Prerequisites
 RUN apt-get update && \
@@ -10,28 +10,32 @@ RUN apt-get update && \
 
 # download and compile lc0
 RUN     git clone -b v0.28.0 --recurse-submodules https://github.com/LeelaChessZero/lc0.git /root/lc0
-RUN     sed -i "s/march=native/march=ivybridge/g" /root/lc0/meson.build
-RUN     /root/lc0/build.sh
+RUN     sed -i "s/march=native/march=ivybridge/g" /root/lc0/meson.build && \
+        /root/lc0/build.sh
+
+# prepare directory structure for runtime
+COPY ./scripts/* /lc0/
+RUN cp /root/lc0/build/release/lc0 /lc0/lc0 && \
+    chmod +x /lc0/* && \
+    mkdir /lc0/weights
 
 
-###################
-## Runtime Stage ##
-###################
+#############
+## Runtime ##
+#############
 FROM docker.io/nvidia/cuda:11.2.0-cudnn8-runtime-ubuntu20.04
 
 # Dependencies
 RUN apt-get update && apt-get install -y wget libopenblas-base && apt-get clean
 
 # Copy scripts for network download and lc0 startup
+COPY --from=lc0_build /lc0 /lc0
 WORKDIR /lc0
-COPY ./scripts/* /lc0/
-RUN chmod +x /lc0/* && \
-    mkdir /lc0/weights
-COPY --from=builder /root/lc0/build/release/lc0 .
 ENV PATH /lc0:$PATH
 
 # Download default network
 RUN echo "NETWORK_NAME=752187.pb.gz\nNETWORK_URL=https://training.lczero.org/get_network?sha=65d1d197e81e221552b0803dd3623c738887dcb132e084fbab20f93deb66a0c0" > /lc0/default_network.env && \
     /lc0/download_network https://training.lczero.org/get_network?sha=65d1d197e81e221552b0803dd3623c738887dcb132e084fbab20f93deb66a0c0 752187.pb.gz
+
 
 CMD ["/lc0/run_lc0"]
