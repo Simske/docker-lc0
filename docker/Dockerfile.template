@@ -1,7 +1,7 @@
-###################
-## Compile Stage ##
-###################
-FROM {{ build['image'] }} as builder
+#################
+## Compile lc0 ##
+#################
+FROM {{ build['image'] }} as lc0_build
 
 ## Install Prerequisites
 RUN apt-get update && \
@@ -10,41 +10,53 @@ RUN apt-get update && \
 
 # download and compile lc0
 RUN     git clone -b v{{ lc0_version }} --recurse-submodules https://github.com/LeelaChessZero/lc0.git /root/lc0
-RUN     sed -i "s/march=native/march={{ march }}/g" /root/lc0/meson.build
-RUN     /root/lc0/build.sh
+RUN     sed -i "s/march=native/march={{ march }}/g" /root/lc0/meson.build && \
+        /root/lc0/build.sh
+
+# prepare directory structure for runtime
+COPY ./scripts/* /lc0/
+RUN cp /root/lc0/build/release/lc0 /lc0/lc0 && \
+    chmod +x /lc0/* && \
+    mkdir /lc0/weights
 
 {% if stockfish %}
+########################
+## Download stockfish ##
+########################
+FROM alpine:3 as stockfish
+
+RUN apk add --no-cache wget unzip
+
 # download and unpack stockfish
-RUN cd ~ && \
+RUN cd /root && \
     wget -4 {{ stockfish_url }} -O stockfish.zip && \
     unzip stockfish.zip && \
-    mv stockfish_*/stockfish_*_x64_avx2 stockfish && \
-    chmod +x stockfish
+    mkdir /stockfish && \
+    mv stockfish_*/stockfish_*_x64_avx2 /stockfish/stockfish && \
+    chmod +x /stockfish/stockfish
+
 {% endif %}
 
-###################
-## Runtime Stage ##
-###################
+#############
+## Runtime ##
+#############
 FROM {{ runtime['image'] }}
 
 # Dependencies
 RUN apt-get update && apt-get install -y {{ runtime['apt_prerequisites'] }} && apt-get clean
 
 # Copy scripts for network download and lc0 startup
+COPY --from=lc0_build /lc0 /lc0
 WORKDIR /lc0
-COPY ./scripts/* /lc0/
-RUN chmod +x /lc0/* && \
-    mkdir /lc0/weights
-COPY --from=builder /root/lc0/build/release/lc0 .
 ENV PATH /lc0:$PATH
 
 # Download default network
 RUN echo "NETWORK_NAME={{ network['name'] }}\nNETWORK_URL={{ network['url']}}" > /lc0/default_network.env && \
     /lc0/download_network {{ network["url"] }} {{ network["name"] }}
+
 {% if stockfish %}
 # Copy stockfish executable
-RUN mkdir /stockfish
-COPY --from=builder /root/stockfish /stockfish/stockfish
+COPY --from=stockfish /stockfish/ /
 ENV PATH /stockfish:$PATH
 {% endif %}
 
