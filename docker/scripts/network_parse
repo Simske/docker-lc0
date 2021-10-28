@@ -11,7 +11,7 @@ then
     echoerr "Using network $NETWORK from '/lc0/network'"
 fi
 
-if ! [[ -z "$NETWORK" ]]
+if [[ -n "$NETWORK" ]]
 then
     echoerr "Using network $NETWORK from \$NETWORK"
     NETWORK_NAME=$NETWORK
@@ -20,7 +20,7 @@ fi
 if [[ $NETWORK_NAME =~ $url_regex ]]
 then
     NETWORK_URL=$NETWORK_NAME
-    NETWORK_NAME=$(echo $NETWORK_NAME | sed -r 's/.*?\/([^\/]+)/\1/')
+    NETWORK_NAME=$(echo "$NETWORK_NAME" | sed -r 's/.*?\/([^\/]+)/\1/')
 else
     NETWORK_URL=${base_weight_url}${NETWORK_NAME}
 fi
@@ -28,14 +28,15 @@ fi
 if [[ -z "$NETWORK_NAME" ]]
 then
     echoerr "No network provided. Set it as environment variable \$NETWORK or write it to file /lc0/network"
+    # shellcheck source=/dev/null
     source /lc0/default_network.env
     echoerr "Using default network $NETWORK_NAME"
 fi
 
-echoerr $NETWORK_URL
+echoerr "$NETWORK_URL"
 
-if ! [[ -f $weights_path/$NETWORK_NAME ]]
+if ! [[ -f $WEIGHTS_PATH/$NETWORK_NAME ]]
 then
-    /lc0/download_network $NETWORK_URL $NETWORK_NAME
+    /lc0/download_network "$NETWORK_URL" "$NETWORK_NAME"
 fi
-echo $NETWORK_NAME
+echo "$NETWORK_NAME"

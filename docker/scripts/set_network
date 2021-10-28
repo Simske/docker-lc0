@@ -9,6 +9,6 @@ then
     echo "No network hash provided as argument"
     exit 1
 else
-    echo $NETWORK > /lc0/network
+    echo "$NETWORK" > /lc0/network
     /lc0/network_parse
 fi

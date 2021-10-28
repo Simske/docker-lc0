@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ## Download network with provided hash. Will overwrite existing files
 
-weights_path=/lc0/weights
+WEIGHTS_PATH=/lc0/weights
 
 NETWORK_URL=$1
 NETWORK_NAME=$2
@@ -11,5 +11,5 @@ then
     echo "No network hash provided as argument"
     exit 1
 else
-    wget -nv --show-progress -O $weights_path/$NETWORK_NAME "$NETWORK_URL"
+    wget -nv --show-progress -O "$WEIGHTS_PATH/$NETWORK_NAME" "$NETWORK_URL"
 fi
