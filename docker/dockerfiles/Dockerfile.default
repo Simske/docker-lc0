@@ -25,6 +25,11 @@ RUN cp /root/lc0/build/release/lc0 /lc0/lc0 && \
 #############
 FROM docker.io/nvidia/cuda:11.2.0-cudnn8-runtime-ubuntu20.04
 
+LABEL maintainer="Simske <mail@simske.com>"
+LABEL org.opencontainers.image.url="https://github.com/Simske/docker-lc0"
+LABEL org.opencontainers.image.source="https://github.com/Simske/docker-lc0"
+LABEL org.opencontainers.image.license="GPL-3.0+"
+
 # Dependencies
 RUN apt-get update && apt-get install -y wget libopenblas-base && apt-get clean
 
