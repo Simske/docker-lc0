@@ -9,7 +9,7 @@ RUN apt-get update && \
     pip3 install meson
 
 # download and compile lc0
-RUN     git clone -b v0.28.0 --recurse-submodules https://github.com/LeelaChessZero/lc0.git /root/lc0
+RUN     git clone -b v0.28.1-rc1 --recurse-submodules https://github.com/LeelaChessZero/lc0.git /root/lc0
 RUN     sed -i "s/march=native/march=ivybridge/g" /root/lc0/meson.build && \
         /root/lc0/build.sh
 
