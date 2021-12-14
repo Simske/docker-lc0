@@ -2,38 +2,11 @@
 default:
   version_tag: "0.28"
   lc0_version: "0.28.2"
-  tag_suffix: ""
+  tag_suffix:
   imagename: docker.io/simske/lc0
   stockfish: False
-  march: ivybridge
-  network:
-    name: 752187.pb.gz
-    url: https://training.lczero.org/get_network?sha=65d1d197e81e221552b0803dd3623c738887dcb132e084fbab20f93deb66a0c0
-  build:
-    image: docker.io/nvidia/cuda:11.2.0-cudnn8-devel-ubuntu20.04
-    apt_prerequisites: >-
-        git
-        wget
-        unzip
-        ninja-build
-        python3
-        python3-pip
-        gcc-8
-        g++-8
-        libeigen3-dev
-        clang
-        libopenblas-dev
-        cmake
-
-  runtime:
-    image: docker.io/nvidia/cuda:11.2.0-cudnn8-runtime-ubuntu20.04
-    apt_prerequisites: >-
-        wget
-        libopenblas-base
-    cmd: True
 
 stockfish:
   base: default
   stockfish: True
-  stockfish_url: https://stockfishchess.org/files/stockfish_14.1_linux_x64_avx2.zip
   tag_suffix: -stockfish
