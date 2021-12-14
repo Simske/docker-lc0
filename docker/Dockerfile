@@ -1,4 +1,4 @@
-ARG LC0_VERSION=0.28.2 \
+ARG LC0_VERSION \
     LC0_ARCHITECTURE=ivybridge \
     LC0_NETWORK_NAME=752187.pb.gz \
     LC0_NETWORK_URL=https://training.lczero.org/get_network?sha=65d1d197e81e221552b0803dd3623c738887dcb132e084fbab20f93deb66a0c0
@@ -67,7 +67,7 @@ ENV PATH /lc0:$PATH
 
 # Download default network
 RUN echo "NETWORK_NAME='${LC0_NETWORK_NAME}'\nNETWORK_URL='${LC0_NETWORK_URL}'" > /lc0/default_network.env && \
-    /lc0/download_network ${NETWORK_URL} ${NETWORK_NAME}
+    /lc0/download_network "${LC0_NETWORK_URL}" "${LC0_NETWORK_NAME}"
 
 CMD ["/lc0/run_lc0"]
 
