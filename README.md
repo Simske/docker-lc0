@@ -19,11 +19,16 @@ For CUDA backends:
 - [`nvidia-container-runtime`](https://developer.nvidia.com/nvidia-container-runtime)
 
 ## Images
-Images are available on [Dockerhub at simske/lc0](https://hub.docker.com/r/simske/lc0).
+Images are available here on Github and on [Dockerhub at simske/lc0](https://hub.docker.com/r/simske/lc0).
 
-Current version tags (all tags on one line point to same image):
-- `latest`, `0.28`, `0.28.0`
-- `latest-stockfish`, `0.28-stockfish`, `0.28.0-stockfish`
+Current versions (all tags on one line point to same image):
+- only lc0:
+  - `ghcr.io/simske/lc0`: tags `latest`, `0.28`, `0.28.2`
+  - `docker.io/simske/lc0`: tags `latest`, `0.28`, `0.28.2`
+- lc0 and Stockfish
+  - `ghcr.io/simske/lc0-stockfish`: tags `latest`, `0.28`, `0.28.2`
+  - `docker.io/simske/lc0`: tags `latest-stockfish`, `0.28-stockfish`, `0.28.2-stockfish`
+
 
 ## Variations
 The Docker images are based on the `nvidia/cuda` cudnn images, and two variations are provided:
@@ -51,7 +56,7 @@ The network can also be set with
 ## Usage with docker directly
 To run the image locally:
 ```
-docker run -i --gpus=all -a STDIN -a STDOUT simske/lc0:latest
+docker run -i --gpus=all -a STDIN -a STDOUT ghcr.io/simske/lc0:latest
 ```
 The networks are in the directory `/lc0/weights`, a docker volume can be mounted to this location to cache the downloaded networks.
 To use a volume mount (with Leelenstein 15.0 network as an example):
