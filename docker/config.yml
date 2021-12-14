@@ -1,7 +1,7 @@
 
 default:
-  version_tag: "0.28.1-rc"
-  lc0_version: "0.28.1-rc1"
+  version_tag: "0.28"
+  lc0_version: "0.28.2"
   tag_suffix: ""
   imagename: docker.io/simske/lc0
   stockfish: False
