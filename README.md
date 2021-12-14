@@ -23,11 +23,11 @@ Images are available here on Github and on [Dockerhub at simske/lc0](https://hub
 
 Current versions (all tags on one line point to same image):
 - only lc0:
-  - `ghcr.io/simske/lc0`: tags `latest`, `0.28`, `0.28.2`
-  - `docker.io/simske/lc0`: tags `latest`, `0.28`, `0.28.2`
+  - [`ghcr.io/simske/lc0`](https://github.com/Simske/docker-lc0/pkgs/container/lc0): tags `latest`, `0.28`, `0.28.2`
+  - [`docker.io/simske/lc0`](https://hub.docker.com/r/simske/lc0): tags `latest`, `0.28`, `0.28.2`
 - lc0 and Stockfish
-  - `ghcr.io/simske/lc0-stockfish`: tags `latest`, `0.28`, `0.28.2`
-  - `docker.io/simske/lc0`: tags `latest-stockfish`, `0.28-stockfish`, `0.28.2-stockfish`
+  - [`ghcr.io/simske/lc0-stockfish`](https://github.com/Simske/docker-lc0/pkgs/container/lc0-stockfish): tags `latest`, `0.28`, `0.28.2`
+  - [`docker.io/simske/lc0`](https://hub.docker.com/r/simske/lc0): tags `latest-stockfish`, `0.28-stockfish`, `0.28.2-stockfish`
 
 
 ## Variations
