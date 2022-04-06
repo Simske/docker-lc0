@@ -19,16 +19,17 @@ For CUDA backends:
 - [`nvidia-container-runtime`](https://developer.nvidia.com/nvidia-container-runtime)
 
 ## Images
-Images are available here on Github and on [Dockerhub at simske/lc0](https://hub.docker.com/r/simske/lc0).
+Images are available [here on Github](https://github.com/Simske?tab=packages&repo_name=docker-lc0) and on [Dockerhub at simske/lc0](https://hub.docker.com/r/simske/lc0).
 
-Current versions (all tags on one line point to same image):
-- only lc0:
-  - [`ghcr.io/simske/lc0`](https://github.com/Simske/docker-lc0/pkgs/container/lc0): tags `latest`, `0.28`, `0.28.2`
-  - [`docker.io/simske/lc0`](https://hub.docker.com/r/simske/lc0): tags `latest`, `0.28`, `0.28.2`
-- lc0 and Stockfish
-  - [`ghcr.io/simske/lc0-stockfish`](https://github.com/Simske/docker-lc0/pkgs/container/lc0-stockfish): tags `latest`, `0.28`, `0.28.2`
-  - [`docker.io/simske/lc0`](https://hub.docker.com/r/simske/lc0): tags `latest-stockfish`, `0.28-stockfish`, `0.28.2-stockfish`
+The latest stable image can be found under:
+- only `lc0`:
+  - [`ghcr.io/simske/lc0:latest`](https://github.com/Simske/docker-lc0/pkgs/container/lc0)
+  - [`docker.io/simske/lc0:latest`](https://hub.docker.com/r/simske/lc0/tags)
+- `lc0` and Stockfish:
+  - [`ghcr.io/simske/lc0-stockfish:latest`](https://github.com/Simske/docker-lc0/pkgs/container/lc0-stockfish)
+  - `docker.io/simske/lc0:latest-stockfish`](https://hub.docker.com/r/simske/lc0/tags?name=stockfish)
 
+More specific version tags can be found in the Github Releases and the image registries.
 
 ## Variations
 The Docker images are based on the `nvidia/cuda` cudnn images, and two variations are provided:
