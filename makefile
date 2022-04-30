@@ -5,6 +5,7 @@ PULL=true
 DOCKERHUB_BASE=docker.io/simske/lc0
 GHCR_BASE=ghcr.io/simske/lc0
 
+BUILD_FLAGS=
 ifeq "$(PULL)" "true"
 PULL_FLAG=--pull
 else
@@ -14,7 +15,7 @@ endif
 default: lc0 stockfish
 
 lc0:
-	docker buildx build $(PULL_FLAG) --build-arg LC0_VERSION=${LC0_VERSION} \
+	docker buildx build $(PULL_FLAG) $(BUILD_FLAGS) --build-arg LC0_VERSION=${LC0_VERSION} \
 		-t ${DOCKERHUB_BASE}:${VERSION_TAG}${TAG_SUFFIX} \
 		-t ${DOCKERHUB_BASE}:${LC0_VERSION}${TAG_SUFFIX} \
 		-t ${GHCR_BASE}:${VERSION_TAG}${TAG_SUFFIX} \
@@ -23,7 +24,7 @@ lc0:
 
 
 stockfish:
-	docker buildx build $(PULL_FLAG) --build-arg LC0_VERSION=${LC0_VERSION} \
+	docker buildx build $(PULL_FLAG) $(BUILD_FLAGS) --build-arg LC0_VERSION=${LC0_VERSION} \
 		-t ${DOCKERHUB_BASE}:${VERSION_TAG}-stockfish${TAG_SUFFIX} \
 		-t ${DOCKERHUB_BASE}:${LC0_VERSION}-stockfish${TAG_SUFFIX} \
 		-t ${GHCR_BASE}-stockfish:${VERSION_TAG}${TAG_SUFFIX} \
