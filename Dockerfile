@@ -1,7 +1,7 @@
 ARG LC0_VERSION \
     LC0_ARCHITECTURE=ivybridge \
-    LC0_NETWORK_NAME=752187.pb.gz \
-    LC0_NETWORK_URL=https://training.lczero.org/get_network?sha=65d1d197e81e221552b0803dd3623c738887dcb132e084fbab20f93deb66a0c0
+    LC0_NETWORK_NAME=753723.pb.gz \
+    LC0_NETWORK_URL=https://training.lczero.org/get_network?sha=3e3444370b9fe413244fdc79671a490e19b93d3cca1669710ffeac890493d198
 ARG STOCKFISH_VERSION=15
 ARG CUDA_VERSION=11.2.2-cudnn8
 #################
