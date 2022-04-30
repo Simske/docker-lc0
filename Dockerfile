@@ -2,13 +2,16 @@ ARG LC0_VERSION \
     LC0_ARCHITECTURE=ivybridge \
     LC0_NETWORK_NAME=753723.pb.gz \
     LC0_NETWORK_URL=https://training.lczero.org/get_network?sha=3e3444370b9fe413244fdc79671a490e19b93d3cca1669710ffeac890493d198
-ARG STOCKFISH_URL=https://stockfishchess.org/files/stockfish_14.1_linux_x64_avx2.zip
-ARG CUDA_VERSION=11.2.0-cudnn8
+ARG STOCKFISH_VERSION=15
+ARG CUDA_VERSION=11.2.2-cudnn8
 #################
 ## Compile lc0 ##
 #################
 FROM docker.io/nvidia/cuda:${CUDA_VERSION}-devel-ubuntu20.04 AS lc0_build
 ARG LC0_VERSION LC0_ARCHITECTURE
+
+## Load new Nvidia GPG key
+RUN DEBIAN_FRONTENT=interactive apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub
 
 ## Install Prerequisites
 RUN apt-get update && \
@@ -29,21 +32,18 @@ RUN cp /root/lc0/build/release/lc0 /lc0/lc0 && \
     mkdir /lc0/weights
 
 ########################
-## Download stockfish ##
+## Build stockfish    ##
 ########################
-FROM alpine:3 AS stockfish_build
-ARG STOCKFISH_URL
+FROM docker.io/ubuntu:20.04 as stockfish_build
+ARG STOCKFISH_VERSION
 
-RUN apk add --no-cache wget unzip
+RUN apt-get update && \
+    apt-get install -y gcc-10 g++-10 git make wget && \
+    ln /usr/bin/gcc-10 /usr/bin/gcc && \
+    ln /usr/bin/g++-10 /usr/bin/g++
 
-# download and unpack stockfish
-RUN cd /root && \
-    wget -4 "${STOCKFISH_URL}" -O stockfish.zip && \
-    unzip stockfish.zip && \
-    mkdir /stockfish && \
-    mv stockfish_*/stockfish_*_x64_avx2 /stockfish/stockfish && \
-    chmod +x /stockfish/stockfish
-
+RUN git clone --depth 1 -b sf_${STOCKFISH_VERSION} https://github.com/official-stockfish/Stockfish.git /stockfish && \
+    cd /stockfish/src && make net && make build -j ARCH=x86-64-avx2
 
 #################
 ## lc0 runtime ##
@@ -56,6 +56,9 @@ LABEL org.opencontainers.image.url="https://github.com/Simske/docker-lc0"
 LABEL org.opencontainers.image.source="https://github.com/Simske/docker-lc0"
 LABEL org.opencontainers.image.license="GPL-3.0+"
 LABEL lc0_version ${LC0_VERSION}
+
+## Load new Nvidia GPG key
+RUN DEBIAN_FRONTENT=interactive apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub
 
 # Dependencies
 RUN apt-get update && apt-get install -y wget libopenblas-base && apt-get clean
@@ -75,5 +78,5 @@ CMD ["/lc0/run_lc0"]
 ## lc0 runtime + stockfish ##
 #############################
 FROM lc0 AS stockfish
-COPY --from=stockfish_build /stockfish/ /
+COPY --from=stockfish_build /stockfish/src/stockfish /stockfish
 ENV PATH /stockfish:$PATH
