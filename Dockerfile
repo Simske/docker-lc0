@@ -3,12 +3,15 @@ ARG LC0_VERSION \
     LC0_NETWORK_NAME=752187.pb.gz \
     LC0_NETWORK_URL=https://training.lczero.org/get_network?sha=65d1d197e81e221552b0803dd3623c738887dcb132e084fbab20f93deb66a0c0
 ARG STOCKFISH_URL=https://stockfishchess.org/files/stockfish_14.1_linux_x64_avx2.zip
-ARG CUDA_VERSION=11.2.0-cudnn8
+ARG CUDA_VERSION=11.2.2-cudnn8
 #################
 ## Compile lc0 ##
 #################
 FROM docker.io/nvidia/cuda:${CUDA_VERSION}-devel-ubuntu20.04 AS lc0_build
 ARG LC0_VERSION LC0_ARCHITECTURE
+
+## Load new Nvidia GPG key
+RUN DEBIAN_FRONTENT=interactive apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub
 
 ## Install Prerequisites
 RUN apt-get update && \
@@ -56,6 +59,9 @@ LABEL org.opencontainers.image.url="https://github.com/Simske/docker-lc0"
 LABEL org.opencontainers.image.source="https://github.com/Simske/docker-lc0"
 LABEL org.opencontainers.image.license="GPL-3.0+"
 LABEL lc0_version ${LC0_VERSION}
+
+## Load new Nvidia GPG key
+RUN DEBIAN_FRONTENT=interactive apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub
 
 # Dependencies
 RUN apt-get update && apt-get install -y wget libopenblas-base && apt-get clean
