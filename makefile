@@ -14,7 +14,7 @@ endif
 default: lc0 stockfish
 
 lc0:
-	docker build $(PULL_FLAG) --build-arg LC0_VERSION=${LC0_VERSION} \
+	docker buildx build $(PULL_FLAG) --build-arg LC0_VERSION=${LC0_VERSION} \
 		-t ${DOCKERHUB_BASE}:${VERSION_TAG}${TAG_SUFFIX} \
 		-t ${DOCKERHUB_BASE}:${LC0_VERSION}${TAG_SUFFIX} \
 		-t ${GHCR_BASE}:${VERSION_TAG}${TAG_SUFFIX} \
@@ -23,7 +23,7 @@ lc0:
 
 
 stockfish:
-	docker build $(PULL_FLAG) --build-arg LC0_VERSION=${LC0_VERSION} \
+	docker buildx build $(PULL_FLAG) --build-arg LC0_VERSION=${LC0_VERSION} \
 		-t ${DOCKERHUB_BASE}:${VERSION_TAG}-stockfish${TAG_SUFFIX} \
 		-t ${DOCKERHUB_BASE}:${LC0_VERSION}-stockfish${TAG_SUFFIX} \
 		-t ${GHCR_BASE}-stockfish:${VERSION_TAG}${TAG_SUFFIX} \

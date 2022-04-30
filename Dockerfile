@@ -1,8 +1,10 @@
+# syntax=docker/dockerfile:1.4
 ARG LC0_VERSION \
     LC0_ARCHITECTURE=ivybridge \
     LC0_NETWORK_NAME=752187.pb.gz \
     LC0_NETWORK_URL=https://training.lczero.org/get_network?sha=65d1d197e81e221552b0803dd3623c738887dcb132e084fbab20f93deb66a0c0
-ARG STOCKFISH_VERSION=15
+ARG STOCKFISH_VERSION=15 \
+    STOCKFISH_ARCH="x86-64-avx2"
 ARG CUDA_VERSION=11.2.2-cudnn8
 #################
 ## Compile lc0 ##
@@ -21,9 +23,9 @@ RUN apt-get update && \
     pip3 install meson
 
 # download and compile lc0
-RUN     git clone -b v${LC0_VERSION} --recurse-submodules https://github.com/LeelaChessZero/lc0.git /root/lc0
-RUN     sed -i "s/march=native/march=${LC0_ARCHITECTURE}/g" /root/lc0/meson.build && \
-        /root/lc0/build.sh
+RUN git clone -b v${LC0_VERSION} --recurse-submodules https://github.com/LeelaChessZero/lc0.git /root/lc0
+RUN sed -i "s/march=native/march=${LC0_ARCHITECTURE}/g" /root/lc0/meson.build && \
+    /root/lc0/build.sh
 
 # prepare directory structure for runtime
 COPY ./scripts/* /lc0/
@@ -31,11 +33,22 @@ RUN cp /root/lc0/build/release/lc0 /lc0/lc0 && \
     chmod +x /lc0/* && \
     mkdir /lc0/weights
 
+##################################
+## Download lc0 default network ##
+##################################
+FROM alpine:latest as lc0_network
+ARG LC0_NETWORK_NAME LC0_NETWORK_URL
+
+RUN apk add wget && mkdir -p /lc0/weights
+COPY ./scripts/download_network /lc0/
+
+RUN sh /lc0/download_network "${LC0_NETWORK_URL}" "${LC0_NETWORK_NAME}"
+
 ########################
 ## Build stockfish    ##
 ########################
 FROM docker.io/ubuntu:20.04 as stockfish_build
-ARG STOCKFISH_VERSION
+ARG STOCKFISH_VERSION STOCKFISH_ARCH
 
 RUN apt-get update && \
     apt-get install -y gcc-10 g++-10 git make wget && \
@@ -43,7 +56,7 @@ RUN apt-get update && \
     ln /usr/bin/g++-10 /usr/bin/g++
 
 RUN git clone --depth 1 -b sf_${STOCKFISH_VERSION} https://github.com/official-stockfish/Stockfish.git /stockfish && \
-    cd /stockfish/src && make net && make build -j ARCH=x86-64-avx2
+    cd /stockfish/src && make help && make net && make build -j ARCH=${STOCKFISH_ARCH}
 
 #################
 ## lc0 runtime ##
@@ -68,9 +81,9 @@ COPY --from=lc0_build /lc0 /lc0
 WORKDIR /lc0
 ENV PATH /lc0:$PATH
 
-# Download default network
-RUN echo "NETWORK_NAME='${LC0_NETWORK_NAME}'\nNETWORK_URL='${LC0_NETWORK_URL}'" > /lc0/default_network.env && \
-    /lc0/download_network "${LC0_NETWORK_URL}" "${LC0_NETWORK_NAME}"
+# Link default network
+RUN echo "NETWORK_NAME='${LC0_NETWORK_NAME}'\nNETWORK_URL='${LC0_NETWORK_URL}'" > /lc0/default_network.env
+COPY --from=lc0_network --link /lc0/weights /lc0/weights
 
 CMD ["/lc0/run_lc0"]
 
@@ -78,5 +91,5 @@ CMD ["/lc0/run_lc0"]
 ## lc0 runtime + stockfish ##
 #############################
 FROM lc0 AS stockfish
-COPY --from=stockfish_build /stockfish/src/stockfish /stockfish
+COPY --from=stockfish_build --link /stockfish/src/stockfish /stockfish
 ENV PATH /stockfish:$PATH
