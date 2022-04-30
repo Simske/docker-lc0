@@ -3,7 +3,6 @@ ARG LC0_VERSION \
     LC0_NETWORK_NAME=752187.pb.gz \
     LC0_NETWORK_URL=https://training.lczero.org/get_network?sha=65d1d197e81e221552b0803dd3623c738887dcb132e084fbab20f93deb66a0c0
 ARG STOCKFISH_VERSION=15
-ARG STOCKFISH_URL=https://stockfishchess.org/files/stockfish_${STOCKFISH_VERSION}_linux_x64_avx2.zip
 ARG CUDA_VERSION=11.2.2-cudnn8
 #################
 ## Compile lc0 ##
@@ -33,21 +32,18 @@ RUN cp /root/lc0/build/release/lc0 /lc0/lc0 && \
     mkdir /lc0/weights
 
 ########################
-## Download stockfish ##
+## Build stockfish    ##
 ########################
-FROM alpine:3 AS stockfish_build
-ARG STOCKFISH_URL
+FROM docker.io/ubuntu:20.04 as stockfish_build
+ARG STOCKFISH_VERSION
 
-RUN apk add --no-cache wget unzip
+RUN apt-get update && \
+    apt-get install -y gcc-10 g++-10 git make wget && \
+    ln /usr/bin/gcc-10 /usr/bin/gcc && \
+    ln /usr/bin/g++-10 /usr/bin/g++
 
-# download and unpack stockfish
-RUN cd /root && \
-    wget -4 "${STOCKFISH_URL}" -O stockfish.zip && \
-    unzip stockfish.zip && \
-    mkdir /stockfish && \
-    mv stockfish_*/stockfish_*_x64_avx2 /stockfish/stockfish && \
-    chmod +x /stockfish/stockfish
-
+RUN git clone --depth 1 -b sf_${STOCKFISH_VERSION} https://github.com/official-stockfish/Stockfish.git /stockfish && \
+    cd /stockfish/src && make net && make build -j ARCH=x86-64-avx2
 
 #################
 ## lc0 runtime ##
@@ -82,5 +78,5 @@ CMD ["/lc0/run_lc0"]
 ## lc0 runtime + stockfish ##
 #############################
 FROM lc0 AS stockfish
-COPY --from=stockfish_build /stockfish/ /
+COPY --from=stockfish_build /stockfish/src/stockfish /stockfish
 ENV PATH /stockfish:$PATH
