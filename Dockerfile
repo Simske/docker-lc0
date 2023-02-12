@@ -2,7 +2,7 @@ ARG LC0_VERSION \
     LC0_ARCHITECTURE=ivybridge \
     LC0_NETWORK_NAME=752187.pb.gz \
     LC0_NETWORK_URL=https://training.lczero.org/get_network?sha=65d1d197e81e221552b0803dd3623c738887dcb132e084fbab20f93deb66a0c0
-ARG STOCKFISH_VERSION=15
+ARG STOCKFISH_VERSION
 ARG CUDA_VERSION=11.2.2-cudnn8
 #################
 ## Compile lc0 ##

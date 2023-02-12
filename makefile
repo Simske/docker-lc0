@@ -1,5 +1,6 @@
-VERSION_TAG=0.28
-LC0_VERSION=0.28.2
+VERSION_TAG=0.29
+LC0_VERSION=0.29.0
+STOCKFISH_VERSION=15.1
 TAG_SUFFIX=
 PULL=true
 DOCKERHUB_BASE=docker.io/simske/lc0
@@ -23,7 +24,9 @@ lc0:
 
 
 stockfish:
-	docker build $(PULL_FLAG) --build-arg LC0_VERSION=${LC0_VERSION} \
+	docker build $(PULL_FLAG) \
+		--build-arg LC0_VERSION=${LC0_VERSION} \
+		--build-arg STOCKFISH_VERSION=${STOCKFISH_VERSION} \
 		-t ${DOCKERHUB_BASE}:${VERSION_TAG}-stockfish${TAG_SUFFIX} \
 		-t ${DOCKERHUB_BASE}:${LC0_VERSION}-stockfish${TAG_SUFFIX} \
 		-t ${GHCR_BASE}-stockfish:${VERSION_TAG}${TAG_SUFFIX} \
